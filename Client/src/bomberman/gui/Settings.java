@@ -1,11 +1,11 @@
 package bomberman.gui;
 
+import bomberman.model.Client;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.lang.Integer;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -59,12 +59,18 @@ public class Settings extends JPanel implements ActionListener {
             if (!(host + ".").matches("^((1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])\\.){4}$")) {
                 throw new Exception("Rouleau de printemps invalide !");
             }
-            try{
-                Integer port = Integer.parseInt(this.portTF.getText());
-            } catch(Exception ex){
+            Integer port;
+            try {
+                port = Integer.parseInt(this.portTF.getText());
+            } catch (Exception ex) {
                 throw new Exception("Nems vapeur invalides !");
             }
 
+            try {
+                Client.getInstance().connect(host, port);
+            } catch (Exception ex) {
+                throw new Exception("Erreur lors de la cuisson !");
+            }
             Window.getInstance().showBoard();
 
         } catch (Exception ex) {
