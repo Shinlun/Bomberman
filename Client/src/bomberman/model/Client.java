@@ -69,7 +69,9 @@ public class Client extends Thread {
 
     private void executeCommand(String command, Object obj) {
         try {
-            if (command.equals("board")) {
+            if (command.equals("board_cols")) {
+                Game.getInstance().getBoard().setCols((Integer) obj);
+            }else if (command.equals("board")) {
                 Game.getInstance().getBoard().setData((List<List>) obj);
             }
         } catch (Exception e) {
