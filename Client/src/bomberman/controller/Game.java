@@ -27,6 +27,10 @@ public class Game {
         this.board.setData(Client.getInstance().getBoard());
     }
 
+    public Board getBoard() {
+        return this.board;
+    }
+
     public void setBoard(Board board) {
         this.board = board;
     }
