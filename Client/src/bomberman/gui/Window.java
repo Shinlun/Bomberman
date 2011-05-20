@@ -19,8 +19,7 @@ public class Window extends JFrame {
         this.setResizable(false);
         this.setLayout(new BorderLayout());
 
-        this.settings = new Settings();
-        this.add(this.settings);
+        this.showSettings();
 
         this.setVisible(true);
     }
@@ -39,13 +38,28 @@ public class Window extends JFrame {
 
     
     /**
+     * Affiche le formulaire de config
+     */
+    public void showSettings() {
+        if(this.board != null)
+            this.remove(this.board);
+        if(this.settings == null)
+            this.settings = new Settings();
+        this.add(this.settings);
+        this.setVisible(true);
+        this.repaint();
+    }
+
+    /**
      * Affiche le plateau de jeu
      */
     public void showBoard() {
-        this.remove(this.settings);
+        if(this.settings != null)
+            this.remove(this.settings);
         this.board = new Board();
         this.add(this.board);
         this.setVisible(true);
+        this.repaint();
     }
 
 }

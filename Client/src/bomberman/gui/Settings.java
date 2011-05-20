@@ -66,7 +66,6 @@ public class Settings extends JPanel implements ActionListener {
             }
 
             Window.getInstance().showBoard();
-            Window.getInstance().repaint();
 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
