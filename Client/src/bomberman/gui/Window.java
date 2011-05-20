@@ -1,5 +1,6 @@
 package bomberman.gui;
 
+import bomberman.controller.Game;
 import java.awt.BorderLayout;
 import javax.swing.JFrame;
 
@@ -57,6 +58,7 @@ public class Window extends JFrame {
         if(this.settings != null)
             this.remove(this.settings);
         this.board = new Board();
+        Game.getInstance().setBoard(this.board);
         this.add(this.board);
         this.setVisible(true);
         this.repaint();

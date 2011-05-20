@@ -1,5 +1,6 @@
 package bomberman.gui;
 
+import bomberman.controller.Game;
 import bomberman.model.Client;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -72,6 +73,7 @@ public class Settings extends JPanel implements ActionListener {
                 throw new Exception("Erreur lors de la cuisson !");
             }
             Window.getInstance().showBoard();
+            Game.getInstance().newGame();
 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
