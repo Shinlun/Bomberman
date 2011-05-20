@@ -59,7 +59,6 @@ public class Settings extends JPanel implements ActionListener {
                 throw new Exception("Rouleau de printemps invalide !");
             }
             Window.getInstance().showBoard();
-            Window.getInstance().repaint();
 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
