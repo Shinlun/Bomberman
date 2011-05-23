@@ -9,8 +9,8 @@ import java.util.Map;
 public class Board {
 
     private List<Element> elements;
-    private int cols = 30;
-    private int rows = 30;
+    private int cols = 10;
+    private int rows = 10;
     private double probability_wall = 0.3;
 
     public void generate() {

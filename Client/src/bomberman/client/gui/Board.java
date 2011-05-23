@@ -9,9 +9,10 @@ import javax.swing.JPanel;
 
 public class Board extends JPanel {
 
-    private List<Element> elements;
+    private List<Element> elements = null;
     private int cols;
     private int rows;
+    private int unit_pixels = 10;
 
     public Board() {
         super();
@@ -19,6 +20,9 @@ public class Board extends JPanel {
 
     @Override
     public void paintComponent(Graphics g) {
+        if (this.elements == null) {
+            return;
+        }
         for (int i = 0; i < this.rows; i++) {
             for (int j = 0; j < this.cols; j++) {
                 try {
@@ -26,7 +30,9 @@ public class Board extends JPanel {
                     if (element == null) {
                         continue;
                     }
-                    g.drawImage(element.getImage(), this.getPosX(i, j), this.getPosY(i, j), this);
+                    int x = this.getPosX(i, j) * this.unit_pixels;
+                    int y = (this.getPosY(i, j) + this.cols) * this.unit_pixels;
+                    g.drawImage(element.getImage(), x, y, this);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
@@ -46,6 +52,10 @@ public class Board extends JPanel {
                 System.out.println(e.getMessage());
             }
         }
+
+        Window window = Window.getInstance();
+        window.setSize((3 * this.cols + this.rows) * this.unit_pixels, (this.cols + 2 * this.rows) * this.unit_pixels);
+        this.repaint();
     }
 
     public void setCols(int cols) {
@@ -53,10 +63,10 @@ public class Board extends JPanel {
     }
 
     private int getPosX(int i, int j) {
-        return 3 * i + j / 2;
+        return 3 * i + j;
     }
 
     private int getPosY(int i, int j) {
-        return 2 * j - i / 3;
+        return 2 * j - i;
     }
 }
