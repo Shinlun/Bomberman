@@ -34,10 +34,11 @@ public class Board extends JPanel {
     public void setData(List<Map> data) {
         this.data = new ArrayList<Element>();
         this.rows = data.size() / this.cols;
+        int size = data.size();
 
-        for (int i = data.size(); i >= 0; i--) {
+        for (int i = 0; i < size; i++) {
             try {
-                this.data.set(i, Element.factory(data.get(i)));
+                this.data.add(Element.factory(data.get(i)));
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }

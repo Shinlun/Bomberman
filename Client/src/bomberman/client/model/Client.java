@@ -52,18 +52,19 @@ public class Client extends Thread {
                         Object obj = this.decodeData(line.substring(space_pos + 1));
                         this.execute(line.substring(0, space_pos), obj);
                     } catch (Exception e) {
+                        System.out.println(e.getMessage());
                     }
                 }
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         } finally {
             try {
                 JOptionPane.showMessageDialog(null, "Connexion perdue !");
                 socket.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
             }
         }
     }
@@ -71,11 +72,12 @@ public class Client extends Thread {
     private void execute(String command, Object obj) {
         try {
             if (command.equals("board_cols")) {
-                Game.getInstance().getBoard().setCols((Integer) obj);
+                Game.getInstance().getBoard().setCols(this.convertToInt(obj));
             } else if (command.equals("board")) {
                 Game.getInstance().getBoard().setData((List<Map>) obj);
             }
         } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -83,6 +85,7 @@ public class Client extends Thread {
         try {
             this.out.println(command + " " + this.encodeData(obj));
         } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -96,8 +99,12 @@ public class Client extends Thread {
         return JSONValue.parse(data);
     }
 
-    public List getBoard() throws Exception {
-        // TODO
-        return null;
+    private int convertToInt(Object n) throws Exception {
+        if (n instanceof Integer) {
+            return (Integer) n;
+        } else if (n instanceof Long) {
+            return ((Long) n).intValue();
+        }
+        throw new Exception(n + " not an Integer");
     }
 }

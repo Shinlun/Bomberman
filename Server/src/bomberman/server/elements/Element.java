@@ -1,26 +1,24 @@
 package bomberman.server.elements;
 
-import java.awt.Image;
+import java.util.HashMap;
 import java.util.Map;
 
 public abstract class Element {
 
-    protected Image image;
-
-    public static Element factory(Map data) throws Exception {
-        Element element = null;
-        if (data.get("type") == "wall") {
-            element = new Wall();
-            return element;
-        }
+    public static Map export(Element element) throws Exception {
         if (element == null) {
+            return null;
+        }
+        Map data = new HashMap();
+
+        if (element instanceof Wall) {
+            data.put("type", "wall");
+        }
+
+        if (data.isEmpty()) {
             throw new Exception("Unknown Element");
         }
-        return element;
+        return data;
 
-    }
-
-    public Image getImage() {
-        return this.image;
     }
 }

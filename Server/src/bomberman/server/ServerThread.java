@@ -22,8 +22,12 @@ public class ServerThread extends Thread {
         try {
             this.out = new PrintWriter(socket.getOutputStream(), true);
             this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            this.sendBoardCols();
+            this.sendBoard();
+
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 
@@ -38,18 +42,19 @@ public class ServerThread extends Thread {
                         Object obj = this.decodeData(line.substring(space_pos + 1));
                         this.execute(line.substring(0, space_pos), obj);
                     } catch (Exception e) {
+                        System.out.println(e.getMessage());
                     }
                 }
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         } finally {
             try {
                 System.out.println("Viré du resto !");
                 socket.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
             }
         }
     }
@@ -62,6 +67,7 @@ public class ServerThread extends Thread {
                 // TODO
             }
         } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -69,6 +75,7 @@ public class ServerThread extends Thread {
         try {
             this.out.println(command + " " + this.encodeData(obj));
         } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -80,5 +87,13 @@ public class ServerThread extends Thread {
 
     private Object decodeData(String data) throws Exception {
         return JSONValue.parse(data);
+    }
+
+    private void sendBoardCols() {
+        this.send("board_cols", Server.board.getCols());
+    }
+
+    private void sendBoard() {
+        this.send("board", Server.board.getData());
     }
 }

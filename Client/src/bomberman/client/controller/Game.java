@@ -1,7 +1,6 @@
 package bomberman.client.controller;
 
 import bomberman.client.gui.Board;
-import bomberman.client.model.Client;
 
 public class Game {
 
@@ -24,7 +23,6 @@ public class Game {
     }
 
     public void newGame() throws Exception {
-        this.board.setData(Client.getInstance().getBoard());
     }
 
     public Board getBoard() {
