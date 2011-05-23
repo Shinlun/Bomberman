@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.Socket;
 import java.util.List;
+import java.util.Map;
 import javax.swing.JOptionPane;
 import org.json.simple.JSONValue;
 
@@ -71,8 +72,8 @@ public class Client extends Thread {
         try {
             if (command.equals("board_cols")) {
                 Game.getInstance().getBoard().setCols((Integer) obj);
-            }else if (command.equals("board")) {
-                Game.getInstance().getBoard().setData((List<List>) obj);
+            } else if (command.equals("board")) {
+                Game.getInstance().getBoard().setData((List<Map>) obj);
             }
         } catch (Exception e) {
         }
@@ -80,7 +81,7 @@ public class Client extends Thread {
 
     private void send(String command, Object obj) {
         try {
-            this.out.println(command+" "+this.encodeData(obj));
+            this.out.println(command + " " + this.encodeData(obj));
         } catch (Exception e) {
         }
     }
