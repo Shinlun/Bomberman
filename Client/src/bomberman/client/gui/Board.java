@@ -9,7 +9,7 @@ import javax.swing.JPanel;
 
 public class Board extends JPanel {
 
-    private List<Element> data;
+    private List<Element> elements;
     private int cols;
     private int rows;
 
@@ -22,7 +22,10 @@ public class Board extends JPanel {
         for (int i = 0; i < this.rows; i++) {
             for (int j = 0; j < this.cols; j++) {
                 try {
-                    Element element = this.data.get(i * this.cols + j);
+                    Element element = this.elements.get(i * this.cols + j);
+                    if (element == null) {
+                        continue;
+                    }
                     g.drawImage(element.getImage(), this.getPosX(i, j), this.getPosY(i, j), this);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
@@ -32,13 +35,13 @@ public class Board extends JPanel {
     }
 
     public void setData(List<Map> data) {
-        this.data = new ArrayList<Element>();
+        this.elements = new ArrayList<Element>();
         this.rows = data.size() / this.cols;
         int size = data.size();
 
         for (int i = 0; i < size; i++) {
             try {
-                this.data.add(Element.factory(data.get(i)));
+                this.elements.add(Element.factory(data.get(i)));
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }

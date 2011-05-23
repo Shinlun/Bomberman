@@ -8,13 +8,13 @@ import java.util.Map;
 
 public class Board {
 
-    private List<Element> data;
+    private List<Element> elements;
     private int cols = 30;
     private int rows = 30;
     private double probability_wall = 0.3;
 
     public void generate() {
-        this.data = new ArrayList<Element>();
+        this.elements = new ArrayList<Element>();
         int size = this.cols * this.rows;
 
         for (int i = 0; i < size; i++) {
@@ -24,22 +24,22 @@ public class Board {
                 element = new Wall();
             }
 
-            this.data.add(element);
+            this.elements.add(element);
         }
     }
 
     public List<Map> getData() {
-        List<Map> data_export = new ArrayList<Map>();
-        int size = this.data.size();
+        List<Map> data = new ArrayList<Map>();
+        int size = this.elements.size();
 
         for (int i = 0; i < size; i++) {
             try {
-                data_export.add(Element.export(this.data.get(i)));
+                data.add(Element.export(this.elements.get(i)));
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
         }
-        return data_export;
+        return data;
     }
 
     public int getCols() {
