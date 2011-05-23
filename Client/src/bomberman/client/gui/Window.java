@@ -58,6 +58,7 @@ public class Window extends JFrame {
         if(this.settings != null)
             this.remove(this.settings);
         this.board = new Board();
+        this.addKeyListener(Game.getInstance());
         Game.getInstance().setBoard(this.board);
         this.add(this.board);
         this.setVisible(true);
