@@ -1,4 +1,4 @@
-package bomberman.gui;
+package bomberman.server.elements;
 
 import java.awt.Image;
 import java.util.Map;

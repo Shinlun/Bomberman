@@ -1,7 +1,7 @@
-package bomberman.gui;
+package bomberman.client.gui;
 
-import bomberman.controller.Game;
-import bomberman.model.Client;
+import bomberman.client.controller.Game;
+import bomberman.client.model.Client;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;

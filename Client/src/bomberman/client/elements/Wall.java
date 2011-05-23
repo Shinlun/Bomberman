@@ -1,4 +1,6 @@
-package bomberman.gui;
+package bomberman.client.elements;
+
+import bomberman.client.gui.Window;
 
 public class Wall extends Element {
 

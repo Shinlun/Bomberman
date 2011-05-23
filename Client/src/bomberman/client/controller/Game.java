@@ -1,7 +1,7 @@
-package bomberman.controller;
+package bomberman.client.controller;
 
-import bomberman.gui.Board;
-import bomberman.model.Client;
+import bomberman.client.gui.Board;
+import bomberman.client.model.Client;
 
 public class Game {
 

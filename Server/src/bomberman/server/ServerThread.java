@@ -1,3 +1,4 @@
+package bomberman.server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -5,9 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.Socket;
-import java.util.List;
 import org.json.simple.JSONValue;
-
 
 public class ServerThread extends Thread {
 
@@ -16,13 +15,13 @@ public class ServerThread extends Thread {
     private BufferedReader in;
     private int client_id;
 
-    public ServerThread(Socket socket, int nb_clients) {
-        this.client_id = nb_clients;
+    public ServerThread(Socket socket, int client_id) {
+        this.client_id = client_id;
         System.out.println("Accès à la cuisine autorisé pour " + socket.getInetAddress());
         this.socket = socket;
         try {
-            out = new PrintWriter(socket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            this.out = new PrintWriter(socket.getOutputStream(), true);
+            this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -32,12 +31,12 @@ public class ServerThread extends Thread {
     public void run() {
         try {
             String line;
-            while ((line = in.readLine()) != null) {
+            while ((line = this.in.readLine()) != null) {
                 int space_pos = line.indexOf(" ");
                 if (space_pos != -1) {
                     try {
                         Object obj = this.decodeData(line.substring(space_pos + 1));
-                        this.executeCommand(line.substring(0, space_pos), obj);
+                        this.execute(line.substring(0, space_pos), obj);
                     } catch (Exception e) {
                     }
                 }
@@ -55,13 +54,20 @@ public class ServerThread extends Thread {
         }
     }
 
-    private void executeCommand(String command, Object obj) {
+    private void execute(String command, Object obj) {
         try {
             if (command.equals("moveBitch")) {
                 // TODO
-            } else if (command.equals("dropBomb")){
+            } else if (command.equals("dropBomb")) {
                 // TODO
             }
+        } catch (Exception e) {
+        }
+    }
+
+    public void send(String command, Object obj) {
+        try {
+            this.out.println(command + " " + this.encodeData(obj));
         } catch (Exception e) {
         }
     }

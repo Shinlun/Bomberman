@@ -1,7 +1,7 @@
-package bomberman.gui;
+package bomberman.client.gui;
 
+import bomberman.client.elements.Element;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JPanel;
@@ -18,7 +18,6 @@ public class Board extends JPanel {
 
     @Override
     public void paintComponent(Graphics g) {
-        List square;
         for (int i = 0; i < this.rows; i++) {
             for (int j = 0; j < this.cols; j++) {
                 try {

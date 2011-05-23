@@ -1,4 +1,6 @@
-package bomberman.gui;
+package bomberman.client;
+
+import bomberman.client.gui.Window;
 
 public class Main {
 

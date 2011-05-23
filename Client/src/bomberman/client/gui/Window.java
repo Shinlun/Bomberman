@@ -1,6 +1,6 @@
-package bomberman.gui;
+package bomberman.client.gui;
 
-import bomberman.controller.Game;
+import bomberman.client.controller.Game;
 import java.awt.BorderLayout;
 import javax.swing.JFrame;
 

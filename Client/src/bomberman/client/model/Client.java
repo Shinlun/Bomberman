@@ -1,6 +1,6 @@
-package bomberman.model;
+package bomberman.client.model;
 
-import bomberman.controller.Game;
+import bomberman.client.controller.Game;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -14,9 +14,9 @@ import org.json.simple.JSONValue;
 public class Client extends Thread {
 
     private static Client instance;
-    private static Socket socket;
-    private static BufferedReader in;
-    private static PrintWriter out;
+    private Socket socket;
+    private BufferedReader in;
+    private PrintWriter out;
 
     private Client() {
     }
@@ -34,9 +34,9 @@ public class Client extends Thread {
     }
 
     public void connect(String host, int port) throws Exception {
-        socket = new Socket(host, port);
-        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        out = new PrintWriter(socket.getOutputStream(), true);
+        this.socket = new Socket(host, port);
+        this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        this.out = new PrintWriter(socket.getOutputStream(), true);
         this.start();
     }
 
@@ -44,12 +44,12 @@ public class Client extends Thread {
     public void run() {
         try {
             String line;
-            while ((line = in.readLine()) != null) {
+            while ((line = this.in.readLine()) != null) {
                 int space_pos = line.indexOf(" ");
                 if (space_pos != -1) {
                     try {
                         Object obj = this.decodeData(line.substring(space_pos + 1));
-                        this.executeCommand(line.substring(0, space_pos), obj);
+                        this.execute(line.substring(0, space_pos), obj);
                     } catch (Exception e) {
                     }
                 }
@@ -67,13 +67,20 @@ public class Client extends Thread {
         }
     }
 
-    private void executeCommand(String command, Object obj) {
+    private void execute(String command, Object obj) {
         try {
             if (command.equals("board_cols")) {
                 Game.getInstance().getBoard().setCols((Integer) obj);
             }else if (command.equals("board")) {
                 Game.getInstance().getBoard().setData((List<List>) obj);
             }
+        } catch (Exception e) {
+        }
+    }
+
+    private void send(String command, Object obj) {
+        try {
+            this.out.println(command+" "+this.encodeData(obj));
         } catch (Exception e) {
         }
     }
