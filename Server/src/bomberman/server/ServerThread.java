@@ -95,6 +95,7 @@ public class ServerThread extends Thread {
         bomb_position.add(this.position_x);
         bomb_position.add(this.position_y);
         Server.sendAll("dropBomb", bomb_position);
+        this.nb_bombs++;
     }
 
     private void execute(String command, Object obj) throws Exception {
