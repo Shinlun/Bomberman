@@ -45,18 +45,15 @@ public class Server {
         }
     }
 
-    public static Map<Integer, ArrayList> getPlayersList(int client_id) {
-        Map<Integer, ArrayList> players = new HashMap<Integer, ArrayList>();
+    public static Map<Integer, Map> getPlayersList(int client_id) {
+        Map<Integer, Map> players = new HashMap<Integer, Map>();
 
         for (ServerThread player_thread : players_threads.values()) {
-            ArrayList player_infos = new ArrayList();
-            Boolean client = false;
-            if (client_id == player_thread.getClientId()) {
-                client = true;
-            }
-            player_infos.add(player_thread.getPostionX());
-            player_infos.add(player_thread.getPositionY());
-            player_infos.add(client);
+            Map player_infos = new HashMap();
+            Boolean client = client_id == player_thread.getClientId();
+            player_infos.put("x", player_thread.getPostionX());
+            player_infos.put("y", player_thread.getPositionY());
+            player_infos.put("client", client);
 
             players.put(player_thread.getClientId(), player_infos);
         }

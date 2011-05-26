@@ -201,7 +201,7 @@ public class ServerThread extends Thread {
     }
 
     private void sendPlayersList() {
-        Map<Integer, ArrayList> players_list = Server.getPlayersList(this.client_id);
+        Map<Integer, Map> players_list = Server.getPlayersList(this.client_id);
         this.send("players", players_list);
     }
 
