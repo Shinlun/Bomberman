@@ -17,13 +17,11 @@ public class ServerThread extends Thread {
     private PrintWriter out;
     private BufferedReader in;
     private Integer client_id;
-    private Server server;
     private int position_x = 0;
     private int position_y = 0;
 
-    public ServerThread(Socket socket, int client_id, Server server) {
+    public ServerThread(Socket socket, int client_id) {
         this.client_id = client_id;
-        this.server = server;
         System.out.println("Accès à la cuisine autorisé pour " + socket.getInetAddress());
         this.socket = socket;
         try {

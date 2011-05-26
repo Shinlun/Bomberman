@@ -12,7 +12,6 @@ public class Server {
     public static Board board;
 
     public static void main(String[] args) {
-        Server server = new Server();
         board = new Board();
         board.generate();
 
@@ -20,7 +19,7 @@ public class Server {
             ServerSocket serverSocket = new ServerSocket(port);
             while (true) {
                 System.out.println("Attente de joueur via le nem vapeur " + port + "...");
-                ServerThread player_thread = new ServerThread(serverSocket.accept(), nb_players, server);
+                ServerThread player_thread = new ServerThread(serverSocket.accept(), nb_players);
                 players_threads.put(nb_players, player_thread);
                 player_thread.start();
                 nb_players++;
