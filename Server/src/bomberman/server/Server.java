@@ -49,6 +49,9 @@ public class Server {
         Map<Integer, Map> players = new HashMap<Integer, Map>();
 
         for (ServerThread player_thread : players_threads.values()) {
+            if (!player_thread.isInitialized()) {
+                continue;
+            }
             Map player_infos = new HashMap();
             Boolean client = client_id == player_thread.getClientId();
             player_infos.put("x", player_thread.getPostionX());
@@ -57,7 +60,6 @@ public class Server {
 
             players.put(player_thread.getClientId(), player_infos);
         }
-
         return players;
     }
 }

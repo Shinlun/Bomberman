@@ -72,6 +72,7 @@ public class Client extends Thread {
     }
 
     private void execute(String command, Object obj) {
+        System.out.println(command + " " + obj);
         try {
             if (command.equals("board_cols")) {
                 Game.getInstance().getBoard().setCols(this.convertToInt(obj));

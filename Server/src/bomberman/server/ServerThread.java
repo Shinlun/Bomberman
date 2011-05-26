@@ -19,6 +19,7 @@ public class ServerThread extends Thread {
     private PrintWriter out;
     private BufferedReader in;
     private int client_id;
+    private boolean initialized = false;
     private int nb_bombs = 0;
     private int bombs_allowed = 1;
     private int bomb_sleeping_time = 4000;
@@ -32,13 +33,6 @@ public class ServerThread extends Thread {
         try {
             this.out = new PrintWriter(socket.getOutputStream(), true);
             this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-            this.sendBoardCols();
-            this.sendBoard();
-            this.setRandomPosition();
-            this.sendPlayersList();
-            this.addPlayer();
-
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -58,6 +52,12 @@ public class ServerThread extends Thread {
 
     @Override
     public void run() {
+        this.sendBoardCols();
+        this.sendBoard();
+        this.setRandomPosition();
+        this.addPlayer();
+        this.sendPlayersList();
+        
         try {
             String line;
             while ((line = this.in.readLine()) != null) {
@@ -143,6 +143,7 @@ public class ServerThread extends Thread {
     }
 
     private void execute(String command, Object obj) throws Exception {
+        System.out.println(command + " " + obj);
         try {
             if (command.equals("move")) {
                 if (obj instanceof ArrayList) {
@@ -213,6 +214,11 @@ public class ServerThread extends Thread {
         ArrayList<Integer> exceptions = new ArrayList<Integer>();
         exceptions.add(this.client_id);
 
+        this.initialized = true;
         Server.sendAllBut("add_player", position, exceptions);
+    }
+
+    public boolean isInitialized() {
+        return this.initialized;
     }
 }
