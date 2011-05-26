@@ -1,6 +1,7 @@
 package bomberman.client.gui;
 
 import bomberman.client.elements.Element;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,8 +54,10 @@ public class Board extends JPanel {
             }
         }
 
-        Window window = Window.getInstance();
-        window.setSize((3 * this.cols + this.rows) * this.unit_pixels, (this.cols + 2 * this.rows) * this.unit_pixels);
+        Dimension panel_size = new Dimension((3 * this.cols + this.rows) * this.unit_pixels, (this.cols + 2 * this.rows) * this.unit_pixels);
+        this.setMinimumSize(panel_size);
+        this.setPreferredSize(panel_size);
+        Window.getInstance().pack();
         this.repaint();
     }
 

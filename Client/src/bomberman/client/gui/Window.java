@@ -16,7 +16,7 @@ public class Window extends JFrame {
         this.setTitle("Bomberman");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
-        this.setSize(400, 200);
+        //this.setSize(400, 200);
         this.setResizable(false);
         this.setLayout(new BorderLayout());
 
@@ -46,9 +46,10 @@ public class Window extends JFrame {
             this.remove(this.board);
         if(this.settings == null)
             this.settings = new Settings();
-        this.add(this.settings);
+        this.add(this.settings, BorderLayout.CENTER);
         this.setVisible(true);
         this.repaint();
+        this.pack();
     }
 
     /**
@@ -60,9 +61,10 @@ public class Window extends JFrame {
         this.board = new Board();
         this.addKeyListener(Game.getInstance());
         Game.getInstance().setBoard(this.board);
-        this.add(this.board);
+        this.add(this.board, BorderLayout.CENTER);
         this.setVisible(true);
         this.repaint();
+        this.pack();
     }
 
 }
