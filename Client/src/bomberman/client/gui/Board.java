@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JPanel;
@@ -68,6 +69,11 @@ public class Board extends JPanel {
 
         for (int i = 0; i < size; i++) {
             try {
+                if(i <= this.rows || i % this.rows == 0 || (i+1) % this.rows == 0 || size - this.rows < i) {
+                    Map type = new HashMap();
+                    type.put("type", "unbreakable_wall");
+                    data.set(i, type);
+                } 
                 this.getElements().add(Element.factory(data.get(i)));
             } catch (Exception e) {
                 System.out.println(e.getMessage());

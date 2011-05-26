@@ -15,7 +15,11 @@ public abstract class Element {
 
         if (data.get("type").equals("wall")) {
             element = new Wall();
-        } else if(data.get("type").equals("bomb")) {
+        } else if(data.get("type").equals("unbreakable_wall")) {
+            Wall wall = new Wall();
+            wall.setBreakable(false);
+            element = wall;
+        } else if (data.get("type").equals("bomb")) {
             element = new Bomb();
         } else if(data.get("type").equals("bonus")) {
             element = new Bonus();
