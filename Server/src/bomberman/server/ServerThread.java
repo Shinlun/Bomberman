@@ -64,6 +64,30 @@ public class ServerThread extends Thread {
         }
     }
 
+    private void move(ArrayList<Integer> move_request){
+        ArrayList<Integer> new_position = new ArrayList<Integer>();
+        Map<Integer, ArrayList<Integer>> server_response = new HashMap<Integer, ArrayList<Integer>>();
+        Boolean moving_allowed = false;
+
+        if (Math.abs(this.position_x - move_request.get(0)) == 1) {
+            moving_allowed = true;
+            this.position_x += move_request.get(0);
+        } else if (Math.abs(this.position_x - move_request.get(1)) == 1) {
+            moving_allowed = true;
+            this.position_y += move_request.get(1);
+        }
+
+        new_position.add(this.position_x);
+        new_position.add(this.position_y);
+        server_response.put(this.client_id, new_position);
+
+        if (moving_allowed) {
+            Server.sendAll("move", server_response);
+        } else {
+            this.send("move", server_response);
+        }
+    }
+
     private void execute(String command, Object obj) throws Exception {
         try {
             if (command.equals("move")) {
@@ -71,27 +95,7 @@ public class ServerThread extends Thread {
                     ArrayList<Integer> move_request = (ArrayList) obj;
 
                     if (move_request.size() == 2) {
-                        ArrayList<Integer> new_position = new ArrayList<Integer>();
-                        Map<Integer, ArrayList<Integer>> server_response = new HashMap<Integer, ArrayList<Integer>>();
-                        Boolean moving_allowed = false;
-
-                        if (Math.abs(this.position_x - move_request.get(0)) == 1) {
-                            moving_allowed = true;
-                            this.position_x += move_request.get(0);
-                        } else if (Math.abs(this.position_x - move_request.get(1)) == 1) {
-                            moving_allowed = true;
-                            this.position_y += move_request.get(1);
-                        }
-
-                        new_position.add(this.position_x);
-                        new_position.add(this.position_y);
-                        server_response.put(this.client_id, new_position);
-
-                        if (moving_allowed) {
-                            Server.sendAll("move", server_response);
-                        } else {
-                            this.send("move", server_response);
-                        }
+                        this.move(move_request);
                     }
                 }
             } else if (command.equals("dropBomb")) {
