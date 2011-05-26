@@ -219,10 +219,10 @@ public class ServerThread extends Thread {
 
         Server.sendAll("drop_bomb", bomb_position);
         this.nb_bombs++;
-        this.burst_bomb(bomb);
+        this.burstBomb(bomb);
     }
 
-    private void burst_bomb(final Bomb bomb) {
+    private void burstBomb(final Bomb bomb) {
         new Thread(new Runnable() {
 
             public void run() {
