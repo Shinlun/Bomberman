@@ -1,9 +1,12 @@
 package bomberman.client.gui;
 
+import bomberman.client.controller.Game;
 import bomberman.client.elements.Element;
+import bomberman.client.elements.Player;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JPanel;
@@ -21,13 +24,15 @@ public class Board extends JPanel {
 
     @Override
     public void paintComponent(Graphics g) {
-        if (this.elements == null) {
+        if (this.getElements() == null) {
             return;
         }
+        Collection<Player> players = Game.getInstance().getPlayers().values();
+
         for (int i = 0; i < this.rows; i++) {
             for (int j = 0; j < this.cols; j++) {
                 try {
-                    Element element = this.elements.get(i * this.cols + j);
+                    Element element = this.getElements().get(i * this.cols + j);
                     if (element == null) {
                         continue;
                     }
@@ -36,6 +41,20 @@ public class Board extends JPanel {
                     g.drawImage(element.getImage(), x, y, this);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
+                }
+            }
+
+            for (Player player : players) {
+                if (player.getY() == i) {
+                    int x = this.getPosX(player.getX(), player.getY());
+                    int y = this.getPosY(player.getY(), player.getY());
+                    if (player.getMovePogression() != 1) {
+                        int old_x = this.getPosX(player.getOldX(), player.getOldX());
+                        int old_y = this.getPosY(player.getOldY(), player.getOldY());
+                        x = (old_x + (int) ((x - old_x) * player.getMovePogression())) * this.unit_pixels;
+                        y = (old_y + (int) ((y - old_y) * player.getMovePogression())) * this.unit_pixels;
+                    }
+                    g.drawImage(player.getImage(), x, y, this);
                 }
             }
         }
@@ -48,7 +67,7 @@ public class Board extends JPanel {
 
         for (int i = 0; i < size; i++) {
             try {
-                this.elements.add(Element.factory(data.get(i)));
+                this.getElements().add(Element.factory(data.get(i)));
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
@@ -59,6 +78,13 @@ public class Board extends JPanel {
         this.setPreferredSize(panel_size);
         Window.getInstance().pack();
         this.repaint();
+    }
+
+    /**
+     * @return the elements
+     */
+    public List<Element> getElements() {
+        return elements;
     }
 
     public void setCols(int cols) {

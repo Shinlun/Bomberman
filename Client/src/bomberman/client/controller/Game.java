@@ -5,12 +5,15 @@ import bomberman.client.gui.Board;
 import bomberman.client.gui.Window;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Game extends Thread implements KeyListener {
 
     private static Game instance;
     private Board board;
-    private Player player;
+    private Map<Integer, Player> players = new HashMap();
+    private int player_id;
     private boolean started = false;
     private int fps = 50;
     private boolean key_up = false;
@@ -36,19 +39,44 @@ public class Game extends Thread implements KeyListener {
 
     public void newGame() {
         this.setBoard(new Board());
-        this.setPlayer(new Player());
         Window window = Window.getInstance();
         window.showBoard();
         window.addKeyListener(this);
-        this.started = true;
     }
 
     @Override
     public void run() {
-        while (this.started) {
+        int period = 1000 / this.fps;
+
+        while (true) {
             try {
-                System.out.println("Arrows:" + (this.key_up ? " UP" : "") + (this.key_down ? " DOWN" : "") + (this.key_left ? " LEFT" : "") + (this.key_right ? " RIGHT" : ""));
-                Thread.sleep(1000 / this.fps);
+                if (!this.started) {
+                    Thread.sleep(1000);
+                    continue;
+                }
+
+                {
+                    Player player = this.getCurrentPlayer();
+                    if (player.getMovePogression() == 1) {
+                        if (this.key_up) {
+                            player.startMove(-1, 0);
+                        } else if (this.key_down) {
+                            player.startMove(1, 0);
+                        } else if (this.key_left) {
+                            player.startMove(0, -1);
+                        } else if (this.key_left) {
+                            player.startMove(0, 1);
+                        }
+                    }
+                }
+
+                for (Player player : this.players.values()) {
+                    player.progressMove(period);
+                }
+
+                this.board.repaint();
+
+                Thread.sleep(period);
             } catch (InterruptedException e) {
                 System.out.println(e.getMessage());
             }
@@ -63,12 +91,48 @@ public class Game extends Thread implements KeyListener {
         this.board = board;
     }
 
-    public Player getPlayer() {
-        return this.player;
+    public int getCurrentPlayerId() {
+        return this.player_id;
     }
 
-    public void setPlayer(Player player) {
-        this.player = player;
+    public void setCurrentPlayerId(int player_id) {
+        this.player_id = player_id;
+    }
+
+    public Player getCurrentPlayer() {
+        return this.players.get(this.player_id);
+    }
+
+    public Map<Integer, Player> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(Map<Integer, Map> data) throws Exception {
+        this.players = new HashMap();
+        for (Map.Entry<Integer, Map> player_data_entry : data.entrySet()) {
+            int id = player_data_entry.getKey();
+            Map player_data = player_data_entry.getValue();
+            Player player = new Player((Integer) player_data.get("x"), (Integer) player_data.get("y"));
+            this.players.put(id, player);
+            if (player_data.containsKey("client") && (Boolean) player_data.get("client")) {
+                this.player_id = id;
+            }
+        }
+        this.started = true;
+    }
+
+    public Player getPlayer(int player_id) {
+        return this.players.get(player_id);
+    }
+
+    public void addPlayer(int player_id, int x, int y) {
+        this.players.put(player_id, new Player(x, y));
+    }
+
+    public void delPlayer(int player_id) {
+        if (this.players.containsKey(player_id)) {
+            this.players.remove(player_id);
+        }
     }
 
     public void keyTyped(KeyEvent e) {
