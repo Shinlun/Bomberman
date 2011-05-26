@@ -24,6 +24,12 @@ public class Board {
                 element = new Wall();
             }
 
+            if(i <= this.rows || i % this.rows == 0 || (i+1) % this.rows == 0 || size - this.rows < i) {
+                Wall wall = new Wall();
+                wall.setBreakable(false);
+                element = wall;
+            }
+
             this.elements.add(element);
         }
     }
