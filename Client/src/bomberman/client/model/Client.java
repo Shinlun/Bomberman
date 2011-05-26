@@ -1,7 +1,6 @@
 package bomberman.client.model;
 
 import bomberman.client.controller.Game;
-import bomberman.client.elements.Player;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
