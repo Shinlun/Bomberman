@@ -68,21 +68,30 @@ public class ServerThread extends Thread {
         try {
             if (command.equals("move")) {
                 if (obj instanceof ArrayList) {
-                    ArrayList<Integer> infos = (ArrayList) obj;
-                    if (infos.size() == 2) {
+                    ArrayList<Integer> move_request = (ArrayList) obj;
+                    Map<Integer, ArrayList<Integer>> server_response = new HashMap<Integer, ArrayList<Integer>>();
+
+                    if (move_request.size() == 2) {
                         ArrayList<Integer> new_position = new ArrayList<Integer>();
-                        if (Math.abs(this.position_x - infos.get(0)) == 1) {
-                            this.position_x += infos.get(0);
-                        } else if (Math.abs(this.position_x - infos.get(1)) == 1) {
-                            this.position_y += infos.get(1);
-                        } else {
-                            this.send("move", false);
+                        Boolean moving_allowed = false;
+
+                        if (Math.abs(this.position_x - move_request.get(0)) == 1) {
+                            moving_allowed = true;
+                            this.position_x += move_request.get(0);
+                        } else if (Math.abs(this.position_x - move_request.get(1)) == 1) {
+                            moving_allowed = true;
+                            this.position_y += move_request.get(1);
                         }
+
                         new_position.add(this.position_x);
                         new_position.add(this.position_y);
-                        Map<Integer, ArrayList<Integer>> move_infos = new HashMap<Integer, ArrayList<Integer>>();
-                        move_infos.put(this.client_id, new_position);
-                        this.server.sendAll("playerMove", obj);
+                        server_response.put(this.client_id, new_position);
+
+                        if (moving_allowed) {
+                            Server.sendAll("move", server_response);
+                        } else {
+                            this.send("move", server_response);
+                        }
                     }
                 }
             } else if (command.equals("dropBomb")) {
