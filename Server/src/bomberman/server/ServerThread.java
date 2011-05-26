@@ -164,6 +164,7 @@ public class ServerThread extends Thread {
 
     private void addPlayer() {
         ArrayList<Integer> position = new ArrayList<Integer>();
+        position.add(this.client_id);
         position.add(this.position_x);
         position.add(this.position_y);
 

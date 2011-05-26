@@ -60,13 +60,13 @@ public class Game extends Thread implements KeyListener {
                     Player player = this.getCurrentPlayer();
                     if (player.getMovePogression() == 1) {
                         if (this.key_up) {
-                            player.startMove(0, -1);
+                            player.startMoveRelative(0, -1);
                         } else if (this.key_down) {
-                            player.startMove(0, 1);
+                            player.startMoveRelative(0, 1);
                         } else if (this.key_left) {
-                            player.startMove(-1, 0);
+                            player.startMoveRelative(-1, 0);
                         } else if (this.key_right) {
-                            player.startMove(1, 0);
+                            player.startMoveRelative(1, 0);
                         }
                     }
                 }

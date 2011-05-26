@@ -45,13 +45,21 @@ public class Player {
         }
     }
 
-    public void startMove(int diff_x, int diff_y) {
+    public void startMoveRelative(int diff_x, int diff_y) {
         this.old_x = this.x;
         this.old_y = this.y;
         this.x += diff_x;
         this.y += diff_y;
         this.move_progression = 0;
         Client.getInstance().movePlayer(diff_x, diff_y);
+    }
+
+    public void startMove(int x, int y) {
+        this.old_x = this.x;
+        this.old_y = this.y;
+        this.x = x;
+        this.y = y;
+        this.move_progression = 0;
     }
 
     public void reposition(int x, int y) {

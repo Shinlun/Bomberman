@@ -90,11 +90,11 @@ public class Client extends Thread {
                 Game.getInstance().addPlayer(player_id, x, y);
 
             } else if (command.equals("del_player")) {
-                Game.getInstance().delPlayer((Integer) obj);
+                Game.getInstance().delPlayer(this.convertToInt(obj));
 
             } else if (command.equals("reposition")) {
                 int x = this.convertToInt(((List) obj).get(0));
-                int y = this.convertToInt((Integer) ((List) obj).get(1));
+                int y = this.convertToInt(((List) obj).get(1));
                 Game.getInstance().getCurrentPlayer().reposition(x, y);
 
             } else if (command.equals("move")) {
