@@ -1,6 +1,7 @@
 package bomberman.server;
 
 import bomberman.server.elements.Bomb;
+import bomberman.server.elements.Wall;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -33,10 +34,25 @@ public class ServerThread extends Thread {
 
             this.sendBoardCols();
             this.sendBoard();
+            this.setRandomPosition();
+            this.sendPlayersList();
+            this.addPlayer();
 
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public int getPostionX() {
+        return this.position_x;
+    }
+
+    public int getPositionY() {
+        return this.position_y;
+    }
+
+    public int getClientId() {
+        return this.client_id;
     }
 
     @Override
@@ -75,7 +91,7 @@ public class ServerThread extends Thread {
         if (Math.abs(this.position_x - move_request.get(0)) == 1) {
             moving_allowed = true;
             this.position_x += move_request.get(0);
-        } else if (Math.abs(this.position_x - move_request.get(1)) == 1) {
+        } else if (Math.abs(this.position_y - move_request.get(1)) == 1 && this.position_x == move_request.get(0)) {
             moving_allowed = true;
             this.position_y += move_request.get(1);
         }
@@ -168,5 +184,30 @@ public class ServerThread extends Thread {
 
     private void sendBoard() {
         this.send("board", Server.board.getData());
+    }
+
+    private void setRandomPosition() {
+        double nb_cases = Server.board.getCols() * Server.board.getRows();
+        int i = (int) (Math.random() * nb_cases);
+
+        while (Server.board.getElements().get(i) instanceof Wall) {
+            i = (int) (Math.random() * nb_cases);
+        }
+
+        this.position_y = (int) Math.ceil(i / Server.board.getCols());
+        this.position_x = i % Server.board.getCols();
+    }
+
+    private void sendPlayersList() {
+        Map<Integer, ArrayList> players_list = Server.getPlayersList(this.client_id);
+        this.send("players", players_list);
+    }
+
+    private void addPlayer() {
+        ArrayList<Integer> position = new ArrayList<Integer>();
+        position.add(this.position_x);
+        position.add(this.position_y);
+
+        Server.sendAll("addPlayer", position);
     }
 }

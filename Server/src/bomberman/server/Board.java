@@ -49,4 +49,8 @@ public class Board {
     public int getRows() {
         return this.rows;
     }
+
+    public List<Element> getElements() {
+       return elements;
+   }
 }
