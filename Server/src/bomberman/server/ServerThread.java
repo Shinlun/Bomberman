@@ -1,5 +1,6 @@
 package bomberman.server;
 
+import bomberman.server.elements.Bomb;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -66,7 +67,7 @@ public class ServerThread extends Thread {
         }
     }
 
-    private void move(ArrayList<Integer> move_request){
+    private void move(ArrayList<Integer> move_request) {
         ArrayList<Integer> new_position = new ArrayList<Integer>();
         Map<Integer, ArrayList<Integer>> server_response = new HashMap<Integer, ArrayList<Integer>>();
         Boolean moving_allowed = false;
@@ -90,12 +91,37 @@ public class ServerThread extends Thread {
         }
     }
 
-    private void dropBomb(){
+    private void dropBomb() {
+        Bomb bomb = new Bomb();
+        bomb.setX(this.position_x);
+        bomb.setY(this.position_y);
+
         ArrayList<Integer> bomb_position = new ArrayList<Integer>();
-        bomb_position.add(this.position_x);
-        bomb_position.add(this.position_y);
+        bomb_position.add(bomb.getX());
+        bomb_position.add(bomb.getY());
+
         Server.sendAll("dropBomb", bomb_position);
         this.nb_bombs++;
+        this.burst_bomb(bomb);
+    }
+
+    private void burst_bomb(final Bomb bomb) {
+        new Thread(new Runnable() {
+
+            public void run() {
+                try {
+                    ArrayList<Integer> bomb_position = new ArrayList<Integer>();
+                    bomb_position.add(bomb.getX());
+                    bomb_position.add(bomb.getY());
+                    Thread.sleep(4000);
+                    Server.sendAll("burstBomb", bomb_position);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+        this.nb_bombs--;
     }
 
     private void execute(String command, Object obj) throws Exception {
@@ -109,7 +135,7 @@ public class ServerThread extends Thread {
                     }
                 }
             } else if (command.equals("dropBomb")) {
-                if(this.nb_bombs < this.bombs_allowed){
+                if (this.nb_bombs < this.bombs_allowed) {
                     this.dropBomb();
                 }
             }
