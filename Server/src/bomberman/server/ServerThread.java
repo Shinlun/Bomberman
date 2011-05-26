@@ -69,10 +69,10 @@ public class ServerThread extends Thread {
             if (command.equals("move")) {
                 if (obj instanceof ArrayList) {
                     ArrayList<Integer> move_request = (ArrayList) obj;
-                    Map<Integer, ArrayList<Integer>> server_response = new HashMap<Integer, ArrayList<Integer>>();
 
                     if (move_request.size() == 2) {
                         ArrayList<Integer> new_position = new ArrayList<Integer>();
+                        Map<Integer, ArrayList<Integer>> server_response = new HashMap<Integer, ArrayList<Integer>>();
                         Boolean moving_allowed = false;
 
                         if (Math.abs(this.position_x - move_request.get(0)) == 1) {
