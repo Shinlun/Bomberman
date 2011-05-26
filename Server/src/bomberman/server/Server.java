@@ -2,7 +2,9 @@ package bomberman.server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Server {
 
@@ -33,5 +35,24 @@ public class Server {
         for (ServerThread player_thread : players_threads.values()) {
             player_thread.send(command, obj);
         }
+    }
+
+    public static Map<Integer, ArrayList> getPlayersList(int client_id) {
+        Map<Integer, ArrayList> players = new HashMap<Integer, ArrayList>();
+
+        for (ServerThread player_thread : players_threads.values()) {
+            ArrayList player_infos = new ArrayList();
+            Boolean client = false;
+            if (client_id == player_thread.getClientId()) {
+                client = true;
+            }
+            player_infos.add(player_thread.getPostionX());
+            player_infos.add(player_thread.getPositionY());
+            player_infos.add(client);
+
+            players.put(player_thread.getClientId(), player_infos);
+        }
+
+        return players;
     }
 }
