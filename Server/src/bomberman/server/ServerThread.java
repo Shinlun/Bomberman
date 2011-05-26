@@ -152,7 +152,7 @@ public class ServerThread extends Thread {
                         this.move(move_request);
                     }
                 }
-            } else if (command.equals("dropBomb")) {
+            } else if (command.equals("drop_bomb")) {
                 if (this.nb_bombs < this.bombs_allowed) {
                     this.dropBomb();
                 }
@@ -213,6 +213,6 @@ public class ServerThread extends Thread {
         ArrayList<Integer> exceptions = new ArrayList<Integer>();
         exceptions.add(this.client_id);
 
-        Server.sendAllBut("addPlayer", position, exceptions);
+        Server.sendAllBut("add_player", position, exceptions);
     }
 }
