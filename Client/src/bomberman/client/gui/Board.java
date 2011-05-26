@@ -24,6 +24,7 @@ public class Board extends JPanel {
 
     @Override
     public void paintComponent(Graphics g) {
+        super.paintComponent(g);
         if (this.getElements() == null) {
             return;
         }
@@ -37,7 +38,7 @@ public class Board extends JPanel {
                         continue;
                     }
                     int x = this.getPosX(i, j) * this.unit_pixels;
-                    int y = (this.getPosY(i, j) + this.cols) * this.unit_pixels;
+                    int y = this.getPosY(i, j) * this.unit_pixels;
                     g.drawImage(element.getImage(), x, y, this);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
@@ -46,13 +47,13 @@ public class Board extends JPanel {
 
             for (Player player : players) {
                 if (player.getY() == i) {
-                    int x = this.getPosX(player.getX(), player.getY());
-                    int y = this.getPosY(player.getY(), player.getY());
+                    int x = this.getPosX(player.getX(), player.getY()) * this.unit_pixels;
+                    int y = this.getPosY(player.getX(), player.getY()) * this.unit_pixels;
                     if (player.getMovePogression() != 1) {
-                        int old_x = this.getPosX(player.getOldX(), player.getOldX());
-                        int old_y = this.getPosY(player.getOldY(), player.getOldY());
-                        x = (old_x + (int) ((x - old_x) * player.getMovePogression())) * this.unit_pixels;
-                        y = (old_y + (int) ((y - old_y) * player.getMovePogression())) * this.unit_pixels;
+                        int old_x = this.getPosX(player.getOldX(), player.getOldY()) * this.unit_pixels;
+                        int old_y = this.getPosY(player.getOldX(), player.getOldY()) * this.unit_pixels;
+                        x = (old_x + (int) ((x - old_x) * player.getMovePogression()));
+                        y = (old_y + (int) ((y - old_y) * player.getMovePogression()));
                     }
                     g.drawImage(player.getImage(), x, y, this);
                 }
@@ -96,6 +97,6 @@ public class Board extends JPanel {
     }
 
     private int getPosY(int i, int j) {
-        return 2 * j - i;
+        return 2 * j - i + this.cols;
     }
 }

@@ -3,8 +3,6 @@ package bomberman.client.elements;
 import bomberman.client.gui.Window;
 import bomberman.client.model.Client;
 import java.awt.Image;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Player {
 
@@ -26,7 +24,7 @@ public class Player {
     /**
      * Squares per second
      */
-    private double velocity = 2;
+    private double velocity = 3;
 
     public Player(int x, int y) {
         this.x = x;
@@ -41,6 +39,9 @@ public class Player {
     public void progressMove(int period) {
         if (this.move_progression != 1) {
             this.move_progression += this.velocity * period / 1000;
+            if (this.move_progression > 1) {
+                this.move_progression = 1;
+            }
         }
     }
 
