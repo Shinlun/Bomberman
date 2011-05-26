@@ -37,15 +37,16 @@ public class Window extends JFrame {
         return instance;
     }
 
-    
     /**
      * Affiche le formulaire de config
      */
     public void showSettings() {
-        if(this.board != null)
+        if (this.board != null) {
             this.remove(this.board);
-        if(this.settings == null)
+        }
+        if (this.settings == null) {
             this.settings = new Settings();
+        }
         this.add(this.settings, BorderLayout.CENTER);
         this.setVisible(true);
         this.repaint();
@@ -56,16 +57,14 @@ public class Window extends JFrame {
      * Affiche le plateau de jeu
      */
     public void showBoard() {
-        if(this.settings != null)
+        if (this.settings != null) {
             this.remove(this.settings);
-        this.board = new Board();
-        this.addKeyListener(Game.getInstance());
-        Game.getInstance().setBoard(this.board);
+        }
+        this.board = Game.getInstance().getBoard();
         this.add(this.board, BorderLayout.CENTER);
         this.setVisible(true);
         this.repaint();
         this.pack();
         this.requestFocus();
     }
-
 }

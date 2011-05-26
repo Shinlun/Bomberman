@@ -72,7 +72,6 @@ public class Settings extends JPanel implements ActionListener {
             } catch (Exception ex) {
                 throw new Exception("Erreur lors de la cuisson !");
             }
-            Window.getInstance().showBoard();
             Game.getInstance().newGame();
 
         } catch (Exception ex) {
