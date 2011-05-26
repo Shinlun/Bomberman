@@ -216,7 +216,7 @@ public class ServerThread extends Thread {
         bomb_position.add(bomb.getX());
         bomb_position.add(bomb.getY());
 
-        Server.sendAll("dropBomb", bomb_position);
+        Server.sendAll("drop_bomb", bomb_position);
         this.nb_bombs++;
         this.burst_bomb(bomb);
     }
@@ -230,7 +230,7 @@ public class ServerThread extends Thread {
                     bomb_position.add(bomb.getX());
                     bomb_position.add(bomb.getY());
                     Thread.sleep(bomb.getSleepingTime());
-                    Server.sendAll("burstBomb", bomb_position);
+                    Server.sendAll("burst_bomb", bomb_position);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
