@@ -80,8 +80,8 @@ public class Client extends Thread {
             } else if (command.equals("board")) {
                 Game.getInstance().getBoard().setData((List<Map>) obj);
 
-            } else if (command.equals("board")) {
-                Game.getInstance().setPlayers((Map<Integer, Map>) obj);
+            } else if (command.equals("players")) {
+                Game.getInstance().setPlayers((Map<String, Map>) obj);
 
             } else if (command.equals("add_player")) {
                 int player_id = this.convertToInt(((List) obj).get(0));
@@ -127,7 +127,7 @@ public class Client extends Thread {
         return JSONValue.parse(data);
     }
 
-    private int convertToInt(Object n) throws Exception {
+    public int convertToInt(Object n) throws Exception {
         if (n instanceof Integer) {
             return (Integer) n;
         } else if (n instanceof Long) {

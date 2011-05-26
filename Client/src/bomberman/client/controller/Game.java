@@ -3,6 +3,7 @@ package bomberman.client.controller;
 import bomberman.client.elements.Player;
 import bomberman.client.gui.Board;
 import bomberman.client.gui.Window;
+import bomberman.client.model.Client;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashMap;
@@ -107,12 +108,12 @@ public class Game extends Thread implements KeyListener {
         return players;
     }
 
-    public void setPlayers(Map<Integer, Map> data) throws Exception {
+    public void setPlayers(Map<String, Map> data) throws Exception {
         this.players = new HashMap();
-        for (Map.Entry<Integer, Map> player_data_entry : data.entrySet()) {
-            int id = player_data_entry.getKey();
+        for (Map.Entry<String, Map> player_data_entry : data.entrySet()) {
+            int id = Integer.parseInt(player_data_entry.getKey());
             Map player_data = player_data_entry.getValue();
-            Player player = new Player((Integer) player_data.get("x"), (Integer) player_data.get("y"));
+            Player player = new Player(Client.getInstance().convertToInt(player_data.get("x")), Client.getInstance().convertToInt(player_data.get("y")));
             this.players.put(id, player);
             if (player_data.containsKey("client") && (Boolean) player_data.get("client")) {
                 this.player_id = id;

@@ -10,6 +10,7 @@ import java.io.StringWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.json.simple.JSONValue;
 
@@ -58,7 +59,7 @@ public class ServerThread extends Thread {
         this.addPlayer();
         this.sendPlayersList();
         this.initialized = true;
-        
+
         try {
             String line;
             while ((line = this.in.readLine()) != null) {
@@ -86,75 +87,16 @@ public class ServerThread extends Thread {
         }
     }
 
-    private void move(ArrayList<Integer> move_request) {
-        ArrayList<Integer> new_position = new ArrayList<Integer>();
-        Map<Integer, ArrayList<Integer>> server_response = new HashMap<Integer, ArrayList<Integer>>();
-        Boolean moving_allowed = false;
-
-        if (Math.abs(this.position_x - move_request.get(0)) == 1) {
-            moving_allowed = true;
-            this.position_x += move_request.get(0);
-        } else if (Math.abs(this.position_y - move_request.get(1)) == 1 && this.position_x == move_request.get(0)) {
-            moving_allowed = true;
-            this.position_y += move_request.get(1);
-        }
-
-        new_position.add(this.position_x);
-        new_position.add(this.position_y);
-        server_response.put(this.client_id, new_position);
-
-        if (moving_allowed) {
-            Server.sendAll("move", server_response);
-        } else {
-            this.send("move", server_response);
-        }
-    }
-
-    private void dropBomb() {
-        Bomb bomb = new Bomb();
-        bomb.setX(this.position_x);
-        bomb.setY(this.position_y);
-        bomb.setSleepingTime(this.bomb_sleeping_time);
-
-        ArrayList<Integer> bomb_position = new ArrayList<Integer>();
-        bomb_position.add(bomb.getX());
-        bomb_position.add(bomb.getY());
-
-        Server.sendAll("dropBomb", bomb_position);
-        this.nb_bombs++;
-        this.burst_bomb(bomb);
-    }
-
-    private void burst_bomb(final Bomb bomb) {
-        new Thread(new Runnable() {
-
-            public void run() {
-                try {
-                    ArrayList<Integer> bomb_position = new ArrayList<Integer>();
-                    bomb_position.add(bomb.getX());
-                    bomb_position.add(bomb.getY());
-                    Thread.sleep(bomb.getSleepingTime());
-                    Server.sendAll("burstBomb", bomb_position);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-
-        this.nb_bombs--;
-    }
-
     private void execute(String command, Object obj) throws Exception {
         System.out.println(command + " " + obj);
         try {
             if (command.equals("move")) {
-                if (obj instanceof ArrayList) {
-                    ArrayList<Integer> move_request = (ArrayList) obj;
-
-                    if (move_request.size() == 2) {
-                        this.move(move_request);
-                    }
+                if (obj instanceof ArrayList && ((List) obj).size() == 2) {
+                    int diff_x = this.convertToInt(((List) obj).get(0));
+                    int diff_y = this.convertToInt(((List) obj).get(1));
+                    this.move(diff_x, diff_y);
                 }
+
             } else if (command.equals("drop_bomb")) {
                 if (this.nb_bombs < this.bombs_allowed) {
                     this.dropBomb();
@@ -181,6 +123,15 @@ public class ServerThread extends Thread {
 
     private Object decodeData(String data) throws Exception {
         return JSONValue.parse(data);
+    }
+
+    private int convertToInt(Object n) throws Exception {
+        if (n instanceof Integer) {
+            return (Integer) n;
+        } else if (n instanceof Long) {
+            return ((Long) n).intValue();
+        }
+        throw new Exception(n + " not an Integer");
     }
 
     private void sendBoardCols() {
@@ -221,5 +172,68 @@ public class ServerThread extends Thread {
 
     public boolean isInitialized() {
         return this.initialized;
+    }
+
+    private void move(int diff_x, int diff_y) {
+        Boolean moving_allowed = false;
+
+        if (Math.abs(diff_x) + Math.abs(diff_y) == 1) {
+            moving_allowed = true;
+        }
+
+        if (moving_allowed) {
+            this.position_x += diff_x;
+            this.position_y += diff_y;
+
+            ArrayList<Integer> move = new ArrayList<Integer>();
+            move.add(this.client_id);
+            move.add(this.position_x);
+            move.add(this.position_y);
+
+            ArrayList<Integer> exceptions = new ArrayList<Integer>();
+            exceptions.add(this.client_id);
+
+            Server.sendAllBut("move", move, exceptions);
+
+        } else {
+            ArrayList<Integer> position = new ArrayList<Integer>();
+            position.add(this.position_x);
+            position.add(this.position_y);
+            this.send("reposition", position);
+        }
+    }
+
+    private void dropBomb() {
+        Bomb bomb = new Bomb();
+        bomb.setX(this.position_x);
+        bomb.setY(this.position_y);
+        bomb.setSleepingTime(this.bomb_sleeping_time);
+
+        ArrayList<Integer> bomb_position = new ArrayList<Integer>();
+        bomb_position.add(bomb.getX());
+        bomb_position.add(bomb.getY());
+
+        Server.sendAll("dropBomb", bomb_position);
+        this.nb_bombs++;
+        this.burst_bomb(bomb);
+    }
+
+    private void burst_bomb(final Bomb bomb) {
+        new Thread(new Runnable() {
+
+            public void run() {
+                try {
+                    ArrayList<Integer> bomb_position = new ArrayList<Integer>();
+                    bomb_position.add(bomb.getX());
+                    bomb_position.add(bomb.getY());
+                    Thread.sleep(bomb.getSleepingTime());
+                    Server.sendAll("burstBomb", bomb_position);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+        this.nb_bombs--;
     }
 }
