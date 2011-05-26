@@ -65,6 +65,7 @@ public class Window extends JFrame {
         this.setVisible(true);
         this.repaint();
         this.pack();
+        this.requestFocus();
     }
 
 }
