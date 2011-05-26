@@ -144,14 +144,17 @@ public class ServerThread extends Thread {
 
     private void setRandomPosition() {
         double nb_cases = Server.board.getCols() * Server.board.getRows();
-        int i = (int) (Math.random() * nb_cases);
+        int i, x, y;
+        Map<Integer, Integer> players_positions = Server.getPlayersPositions();
 
-        while (Server.board.getElements().get(i) instanceof Wall) {
+        do {
             i = (int) (Math.random() * nb_cases);
-        }
+            x = i % Server.board.getCols();
+            y = (int) Math.ceil(i / Server.board.getCols());
+        } while (Server.board.getElements().get(i) != null && !(players_positions.containsKey(x) && players_positions.get(x).equals(y)));
 
-        this.position_x = (int) Math.ceil(i / Server.board.getCols());
-        this.position_y = i % Server.board.getCols();
+        this.position_x = x;
+        this.position_y = y;
     }
 
     private void sendPlayersList() {

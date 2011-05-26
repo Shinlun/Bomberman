@@ -63,6 +63,16 @@ public class Server {
         return players;
     }
 
+    public static Map<Integer, Integer> getPlayersPositions() {
+        Map<Integer, Integer> positions = new HashMap<Integer, Integer>();
+
+        for (ServerThread player_thread : players_threads.values()) {
+            positions.put(player_thread.getPostionX(), player_thread.getPositionY());
+        }
+
+        return positions;
+    }
+
     public static void delPlayer(int client_id) {
         players_threads.remove(client_id);
         sendAll("del_player", client_id);
