@@ -199,8 +199,8 @@ public class ServerThread extends Thread {
             i = (int) (Math.random() * nb_cases);
         }
 
-        this.position_y = (int) Math.ceil(i / Server.board.getCols());
-        this.position_x = i % Server.board.getCols();
+        this.position_x = (int) Math.ceil(i / Server.board.getCols());
+        this.position_y = i % Server.board.getCols();
     }
 
     private void sendPlayersList() {
