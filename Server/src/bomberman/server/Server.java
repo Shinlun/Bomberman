@@ -37,6 +37,14 @@ public class Server {
         }
     }
 
+    public static void sendAllBut(String command, Object obj, ArrayList<Integer> exceptions) {
+        for (ServerThread player_thread : players_threads.values()) {
+            if (!exceptions.contains(player_thread.getClientId())) {
+                player_thread.send(command, obj);
+            }
+        }
+    }
+
     public static Map<Integer, ArrayList> getPlayersList(int client_id) {
         Map<Integer, ArrayList> players = new HashMap<Integer, ArrayList>();
 

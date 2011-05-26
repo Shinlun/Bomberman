@@ -21,6 +21,7 @@ public class ServerThread extends Thread {
     private int client_id;
     private int nb_bombs = 0;
     private int bombs_allowed = 1;
+    private int bomb_sleeping_time = 4000;
     private int position_x = 0;
     private int position_y = 0;
 
@@ -111,6 +112,7 @@ public class ServerThread extends Thread {
         Bomb bomb = new Bomb();
         bomb.setX(this.position_x);
         bomb.setY(this.position_y);
+        bomb.setSleepingTime(this.bomb_sleeping_time);
 
         ArrayList<Integer> bomb_position = new ArrayList<Integer>();
         bomb_position.add(bomb.getX());
@@ -129,7 +131,7 @@ public class ServerThread extends Thread {
                     ArrayList<Integer> bomb_position = new ArrayList<Integer>();
                     bomb_position.add(bomb.getX());
                     bomb_position.add(bomb.getY());
-                    Thread.sleep(4000);
+                    Thread.sleep(bomb.getSleepingTime());
                     Server.sendAll("burstBomb", bomb_position);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -208,6 +210,9 @@ public class ServerThread extends Thread {
         position.add(this.position_x);
         position.add(this.position_y);
 
-        Server.sendAll("addPlayer", position);
+        ArrayList<Integer> exceptions = new ArrayList<Integer>();
+        exceptions.add(this.client_id);
+
+        Server.sendAllBut("addPlayer", position, exceptions);
     }
 }
