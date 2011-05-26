@@ -138,7 +138,7 @@ public class Game extends Thread implements KeyListener {
 
     public void keyTyped(KeyEvent e) {
         if (e.getKeyChar() == KeyEvent.VK_SPACE) {
-            System.out.println("FIRE IN THE HOLE !");
+            Client.getInstance().dropBomb();
         }
     }
 

@@ -142,4 +142,8 @@ public class Client extends Thread {
         obj.add(diff_y);
         this.send("move", obj);
     }
+
+    public void dropBomb(){
+        this.send("drop_bomb", "");
+    }
 }
