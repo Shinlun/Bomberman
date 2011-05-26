@@ -31,8 +31,8 @@ public class Board extends JPanel {
         }
         Collection<Player> players = Game.getInstance().getPlayers().values();
 
-        for (int i = 0; i < this.rows; i++) {
-            for (int j = 0; j < this.cols; j++) {
+        for (int j = 0; j < this.rows; j++) {
+            for (int i = 0; i < this.cols; i++) {
                 try {
                     Element element = this.getElements().get(i * this.cols + j);
                     if (element == null) {
@@ -47,7 +47,7 @@ public class Board extends JPanel {
             }
 
             for (Player player : players) {
-                if (player.getY() == i) {
+                if (player.getY() == j) {
                     int x = this.getPosX(player.getX(), player.getY()) * this.unit_pixels;
                     int y = this.getPosY(player.getX(), player.getY()) * this.unit_pixels;
                     if (player.getMovePogression() != 1) {
