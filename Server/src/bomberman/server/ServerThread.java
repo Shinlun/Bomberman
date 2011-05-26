@@ -16,7 +16,9 @@ public class ServerThread extends Thread {
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
-    private Integer client_id;
+    private int client_id;
+    private int nb_bombs = 0;
+    private int bombs_allowed = 1;
     private int position_x = 0;
     private int position_y = 0;
 
@@ -88,6 +90,13 @@ public class ServerThread extends Thread {
         }
     }
 
+    private void dropBomb(){
+        ArrayList<Integer> bomb_position = new ArrayList<Integer>();
+        bomb_position.add(this.position_x);
+        bomb_position.add(this.position_y);
+        Server.sendAll("dropBomb", bomb_position);
+    }
+
     private void execute(String command, Object obj) throws Exception {
         try {
             if (command.equals("move")) {
@@ -99,7 +108,9 @@ public class ServerThread extends Thread {
                     }
                 }
             } else if (command.equals("dropBomb")) {
-                // TODO
+                if(this.nb_bombs < this.bombs_allowed){
+                    this.dropBomb();
+                }
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
