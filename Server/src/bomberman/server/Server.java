@@ -49,11 +49,11 @@ public class Server {
         Map<Integer, Map> players = new HashMap<Integer, Map>();
 
         for (ServerThread player_thread : players_threads.values()) {
-            if (!player_thread.isInitialized()) {
+            Boolean client = client_id == player_thread.getClientId();
+            if (!player_thread.isInitialized() && !client) {
                 continue;
             }
             Map player_infos = new HashMap();
-            Boolean client = client_id == player_thread.getClientId();
             player_infos.put("x", player_thread.getPostionX());
             player_infos.put("y", player_thread.getPositionY());
             player_infos.put("client", client);
@@ -61,5 +61,10 @@ public class Server {
             players.put(player_thread.getClientId(), player_infos);
         }
         return players;
+    }
+
+    public static void delPlayer(int client_id) {
+        players_threads.remove(client_id);
+        sendAll("del_player", client_id);
     }
 }

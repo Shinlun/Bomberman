@@ -57,6 +57,7 @@ public class ServerThread extends Thread {
         this.setRandomPosition();
         this.addPlayer();
         this.sendPlayersList();
+        this.initialized = true;
         
         try {
             String line;
@@ -78,6 +79,7 @@ public class ServerThread extends Thread {
             try {
                 System.out.println("Viré du resto !");
                 socket.close();
+                Server.delPlayer(this.client_id);
             } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
@@ -214,7 +216,6 @@ public class ServerThread extends Thread {
         ArrayList<Integer> exceptions = new ArrayList<Integer>();
         exceptions.add(this.client_id);
 
-        this.initialized = true;
         Server.sendAllBut("add_player", position, exceptions);
     }
 

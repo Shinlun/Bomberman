@@ -84,23 +84,23 @@ public class Client extends Thread {
                 Game.getInstance().setPlayers((Map<Integer, Map>) obj);
 
             } else if (command.equals("add_player")) {
-                int player_id = (Integer) ((List) obj).get(0);
-                int x = (Integer) ((List) obj).get(1);
-                int y = (Integer) ((List) obj).get(2);
+                int player_id = this.convertToInt(((List) obj).get(0));
+                int x = this.convertToInt(((List) obj).get(1));
+                int y = this.convertToInt(((List) obj).get(2));
                 Game.getInstance().addPlayer(player_id, x, y);
 
             } else if (command.equals("del_player")) {
                 Game.getInstance().delPlayer((Integer) obj);
 
             } else if (command.equals("reposition")) {
-                int x = (Integer) ((List) obj).get(0);
-                int y = (Integer) ((List) obj).get(1);
+                int x = this.convertToInt(((List) obj).get(0));
+                int y = this.convertToInt((Integer) ((List) obj).get(1));
                 Game.getInstance().getCurrentPlayer().reposition(x, y);
 
             } else if (command.equals("move")) {
-                int player_id = (Integer) ((List) obj).get(0);
-                int x = (Integer) ((List) obj).get(1);
-                int y = (Integer) ((List) obj).get(2);
+                int player_id = this.convertToInt(((List) obj).get(0));
+                int x = this.convertToInt(((List) obj).get(1));
+                int y = this.convertToInt(((List) obj).get(2));
                 Game.getInstance().getPlayer(player_id).startMove(x, y);
             }
 
