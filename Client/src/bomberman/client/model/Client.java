@@ -1,12 +1,14 @@
 package bomberman.client.model;
 
 import bomberman.client.controller.Game;
+import bomberman.client.elements.Player;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JOptionPane;
@@ -73,9 +75,34 @@ public class Client extends Thread {
         try {
             if (command.equals("board_cols")) {
                 Game.getInstance().getBoard().setCols(this.convertToInt(obj));
+
             } else if (command.equals("board")) {
                 Game.getInstance().getBoard().setData((List<Map>) obj);
+
+            } else if (command.equals("board")) {
+                Game.getInstance().setPlayers((Map<Integer, Map>) obj);
+
+            } else if (command.equals("add_player")) {
+                int player_id = (Integer) ((List) obj).get(0);
+                int x = (Integer) ((List) obj).get(1);
+                int y = (Integer) ((List) obj).get(2);
+                Game.getInstance().addPlayer(player_id, x, y);
+
+            } else if (command.equals("del_player")) {
+                Game.getInstance().delPlayer((Integer) obj);
+
+            } else if (command.equals("reposition")) {
+                int x = (Integer) ((List) obj).get(0);
+                int y = (Integer) ((List) obj).get(1);
+                Game.getInstance().getCurrentPlayer().reposition(x, y);
+
+            } else if (command.equals("move")) {
+                int player_id = (Integer) ((List) obj).get(0);
+                int x = (Integer) ((List) obj).get(1);
+                int y = (Integer) ((List) obj).get(2);
+                Game.getInstance().getPlayer(player_id).startMove(x, y);
             }
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -106,5 +133,12 @@ public class Client extends Thread {
             return ((Long) n).intValue();
         }
         throw new Exception(n + " not an Integer");
+    }
+
+    public void movePlayer(int diff_x, int diff_y) {
+        List<Integer> obj = new ArrayList();
+        obj.add(diff_x);
+        obj.add(diff_y);
+        this.send("move", obj);
     }
 }
