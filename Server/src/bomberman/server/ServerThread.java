@@ -7,6 +7,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import org.json.simple.JSONValue;
 
 public class ServerThread extends Thread {
@@ -14,12 +16,14 @@ public class ServerThread extends Thread {
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
-    private int client_id;
+    private Integer client_id;
+    private Server server;
     private int position_x = 0;
     private int position_y = 0;
 
-    public ServerThread(Socket socket, int client_id) {
+    public ServerThread(Socket socket, int client_id, Server server) {
         this.client_id = client_id;
+        this.server = server;
         System.out.println("Accès à la cuisine autorisé pour " + socket.getInetAddress());
         this.socket = socket;
         try {
@@ -74,11 +78,13 @@ public class ServerThread extends Thread {
                         } else if (Math.abs(this.position_x - infos.get(1)) == 1) {
                             this.position_y += infos.get(1);
                         } else {
-                            throw new Exception("Position incorrecte");
+                            this.send("move", false);
                         }
                         new_position.add(this.position_x);
                         new_position.add(this.position_y);
-                        this.send("move", new_position);
+                        Map<Integer, ArrayList<Integer>> move_infos = new HashMap<Integer, ArrayList<Integer>>();
+                        move_infos.put(this.client_id, new_position);
+                        this.server.sendAll("playerMove", obj);
                     }
                 }
             } else if (command.equals("dropBomb")) {
