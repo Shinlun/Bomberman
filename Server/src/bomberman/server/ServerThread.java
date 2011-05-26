@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import org.json.simple.JSONValue;
 
 public class ServerThread extends Thread {
@@ -14,6 +15,8 @@ public class ServerThread extends Thread {
     private PrintWriter out;
     private BufferedReader in;
     private int client_id;
+    private int position_x = 0;
+    private int position_y = 0;
 
     public ServerThread(Socket socket, int client_id) {
         this.client_id = client_id;
@@ -59,10 +62,25 @@ public class ServerThread extends Thread {
         }
     }
 
-    private void execute(String command, Object obj) {
+    private void execute(String command, Object obj) throws Exception {
         try {
-            if (command.equals("moveBitch")) {
-                // TODO
+            if (command.equals("move")) {
+                if (obj instanceof ArrayList) {
+                    ArrayList<Integer> infos = (ArrayList) obj;
+                    if (infos.size() == 2) {
+                        ArrayList<Integer> new_position = new ArrayList<Integer>();
+                        if (Math.abs(this.position_x - infos.get(0)) == 1) {
+                            this.position_x += infos.get(0);
+                        } else if (Math.abs(this.position_x - infos.get(1)) == 1) {
+                            this.position_y += infos.get(1);
+                        } else {
+                            throw new Exception("Position incorrecte");
+                        }
+                        new_position.add(this.position_x);
+                        new_position.add(this.position_y);
+                        this.send("move", new_position);
+                    }
+                }
             } else if (command.equals("dropBomb")) {
                 // TODO
             }
