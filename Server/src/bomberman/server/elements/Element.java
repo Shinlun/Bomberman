@@ -74,7 +74,7 @@ public abstract class Element {
 
     public void burn() {
         this.setActive(false);
-        this.delayReborn();
+        this.delayRebirth();
     }
 
     public void setRebirthDelay(int delay) {
@@ -85,7 +85,7 @@ public abstract class Element {
         return this.rebirth_delay;
     }
 
-    public void delayReborn() {
+    public void delayRebirth() {
         final Element element = this;
         new Thread(new Runnable() {
 
@@ -94,7 +94,16 @@ public abstract class Element {
                     if (!active) {
                         Thread.sleep(rebirth_delay);
                         List<Integer> positions = Server.getPlayersPositions();
-                        if (!positions.contains(x + Server.board.getCols() * y) && !Server.board.isSquareOnFire(x, y)) {
+
+                        int index = x + Server.board.getCols() * y;
+                        Element board_element = Server.board.getElements().get(index);
+
+                        if (!positions.contains(x + Server.board.getCols() * y)
+                                && !Server.board.isSquareOnFire(x, y)
+                                && (element.equals(board_element) || board_element == null)) {
+                            if (board_element == null) {
+                                Server.board.getElements().set(index, element);
+                            }
                             setActive(true);
                             List element_to_add = new ArrayList();
                             element_to_add.add(Element.export(element));
@@ -102,7 +111,7 @@ public abstract class Element {
                             element_to_add.add(y);
                             Server.sendAll("add_element", element_to_add);
                         } else {
-                            element.delayReborn();
+                            element.delayRebirth();
                         }
                     }
                 } catch (Exception e) {

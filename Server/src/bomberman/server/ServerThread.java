@@ -209,6 +209,8 @@ public class ServerThread extends Thread {
         }
 
         if (moving_allowed) {
+            this.moving = true;
+
             ArrayList<Integer> move = new ArrayList<Integer>();
             move.add(this.client_id);
             move.add(this.position_x + diff_x);
