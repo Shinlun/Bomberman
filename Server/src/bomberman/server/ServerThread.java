@@ -2,7 +2,6 @@ package bomberman.server;
 
 import bomberman.server.elements.Bomb;
 import bomberman.server.elements.Element;
-import bomberman.server.elements.Wall;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -148,11 +147,13 @@ public class ServerThread extends Thread {
         int i, x, y;
         Map<Integer, Integer> players_positions = Server.getPlayersPositions();
 
+        Element element;
         do {
             i = (int) Math.round(Math.random() * nb_cases);
             x = i % Server.board.getCols();
             y = (int) Math.ceil(i / Server.board.getCols());
-        } while (Server.board.getElements().get(i) != null || players_positions.containsKey(x) && players_positions.get(x) == y);
+            element = Server.board.getElements().get(i);
+        } while ((element != null && !element.isWalkable()) || players_positions.containsKey(x) && players_positions.get(x) == y);
 
         this.position_x = x;
         this.position_y = y;
@@ -190,7 +191,8 @@ public class ServerThread extends Thread {
         int target_y = this.position_y + diff_y;
 
         int target_index = target_x + Server.board.getCols() * target_y;
-        if (Server.board.getElements().get(target_index) instanceof Wall || Server.board.getElements().get(target_index) instanceof Bomb) {
+        Element target_element = Server.board.getElements().get(target_index);
+        if (target_element != null && !(target_element.isActive() && target_element.isWalkable())) {
             moving_allowed = false;
         }
 
@@ -233,10 +235,11 @@ public class ServerThread extends Thread {
         Server.sendAll("drop_bomb", bomb_position);
 
         this.nb_bombs++;
-        this.burstBomb(bomb, this);
+        this.burstBomb(bomb);
     }
 
-    private void burstBomb(final Bomb bomb, final ServerThread thread) {
+    private void burstBomb(final Bomb bomb) {
+        final ServerThread current_thread = this;
         new Thread(new Runnable() {
 
             public void run() {
@@ -252,7 +255,11 @@ public class ServerThread extends Thread {
                         int index = i + Server.board.getCols() * bomb.getY();
                         Element element = Server.board.getElements().get(index);
                         if (element != null) {
-                            element.setActive(false);
+                            if (element instanceof Bomb) {
+                                Server.board.setElement(index, null);
+                            } else {
+                                element.setActive(false);
+                            }
                         }
                         for (ServerThread thread : players_threads.values()) {
                             if (thread.getPostionX() == i && thread.getPositionY() == bomb.getY()) {
@@ -264,7 +271,11 @@ public class ServerThread extends Thread {
                         int index = bomb.getX() + Server.board.getCols() * i;
                         Element element = Server.board.getElements().get(index);
                         if (element != null) {
-                            element.setActive(false);
+                            if (element instanceof Bomb) {
+                                Server.board.setElement(index, null);
+                            } else {
+                                element.setActive(false);
+                            }
                         }
                         for (ServerThread thread : players_threads.values()) {
                             if (thread.getPostionX() == bomb.getX() && thread.getPositionY() == i) {
@@ -274,7 +285,7 @@ public class ServerThread extends Thread {
                     }
 
                     Server.sendAll("burst_bomb", bomb_position);
-                    thread.nb_bombs--;
+                    current_thread.nb_bombs--;
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
