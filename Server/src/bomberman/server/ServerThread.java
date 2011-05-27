@@ -1,6 +1,7 @@
 package bomberman.server;
 
 import bomberman.server.elements.Bomb;
+import bomberman.server.elements.Element;
 import bomberman.server.elements.Wall;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -247,20 +248,26 @@ public class ServerThread extends Thread {
 
                     HashMap<Integer, ServerThread> players_threads = Server.getPlayersThreads();
 
-                    for(int i = 1 ; i < Server.board.getCols() - 1 ; i++) {
+                    for (int i = 1; i < Server.board.getCols() - 1; i++) {
                         int index = i * Server.board.getRows() + bomb.getY();
-                        Server.board.setElement(index, null);
-                        for(ServerThread thread : players_threads.values()) {
-                            if(thread.getPostionX() == i && thread.getPositionY() == bomb.getY()) {
+                        Element element = Server.board.getElements().get(index);
+                        if (element != null) {
+                            element.setActive(false);
+                        }
+                        for (ServerThread thread : players_threads.values()) {
+                            if (thread.getPostionX() == i && thread.getPositionY() == bomb.getY()) {
                                 Server.killPlayer(thread.getClientId());
                             }
                         }
                     }
-                    for(int i = 1 ; i < Server.board.getRows() - 1 ; i++) {
+                    for (int i = 1; i < Server.board.getRows() - 1; i++) {
                         int index = bomb.getX() * Server.board.getRows() + i;
-                        Server.board.setElement(index, null);
-                        for(ServerThread thread : players_threads.values()) {
-                            if(thread.getPostionX() == bomb.getX() && thread.getPositionY() == i) {
+                        Element element = Server.board.getElements().get(index);
+                        if (element != null) {
+                            element.setActive(false);
+                        }
+                        for (ServerThread thread : players_threads.values()) {
+                            if (thread.getPostionX() == bomb.getX() && thread.getPositionY() == i) {
                                 Server.killPlayer(thread.getClientId());
                             }
                         }
