@@ -5,9 +5,9 @@ import bomberman.client.elements.Element;
 import bomberman.client.elements.Player;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JPanel;
@@ -15,12 +15,15 @@ import javax.swing.JPanel;
 public class Board extends JPanel {
 
     private List<Element> elements = null;
+    private List<Integer> fire = new ArrayList();
+    private Image fire_image;
     private int cols;
     private int rows;
     private int unit_pixels = 10;
 
     public Board() {
         super();
+        this.fire_image = Window.getInstance().getToolkit().getImage("images/fire.png");
     }
 
     @Override
@@ -34,13 +37,18 @@ public class Board extends JPanel {
         for (int j = 0; j < this.rows; j++) {
             for (int i = this.cols - 1; i >= 0; i--) {
                 try {
-                    Element element = this.getElements().get(j * this.cols + i);
-                    if (element == null) {
-                        continue;
-                    }
+                    int index = j * this.cols + i;
                     int x = this.getPosX(i, j) * this.unit_pixels;
                     int y = this.getPosY(i, j) * this.unit_pixels;
-                    g.drawImage(element.getImage(), x, y, this);
+
+                    Element element = this.getElements().get(index);
+                    if (element != null) {
+                        g.drawImage(element.getImage(), x, y, this);
+                    }
+
+                    if (this.fire.contains(index)) {
+                        g.drawImage(this.fire_image, x, y, this);
+                    }
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
@@ -119,5 +127,26 @@ public class Board extends JPanel {
             return true;
         }
         return element.isWalkable();
+    }
+
+    public void addFire(final List<Integer> add_fire) {
+        this.fire.addAll(add_fire);
+
+        new Thread(new Runnable() {
+
+            public void run() {
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    System.out.println(e.getMessage());
+                }
+                for (int i : add_fire) {
+                    int pos = fire.indexOf(i);
+                    if (pos != -1) {
+                        fire.remove(pos);
+                    }
+                }
+            }
+        }).start();
     }
 }
