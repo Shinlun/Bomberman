@@ -150,8 +150,8 @@ public class ServerThread extends Thread {
 
         do {
             i = (int) Math.round(Math.random() * nb_cases);
-            x = (int) Math.ceil(i / Server.board.getRows());
-            y = i % Server.board.getRows();
+            x = i % Server.board.getCols();
+            y = (int) Math.ceil(i / Server.board.getCols());
         } while (Server.board.getElements().get(i) != null || players_positions.containsKey(x) && players_positions.get(x) == y);
 
         this.position_x = x;
@@ -189,7 +189,7 @@ public class ServerThread extends Thread {
         int target_x = this.position_x + diff_x;
         int target_y = this.position_y + diff_y;
 
-        int target_index = target_x * Server.board.getRows() + target_y;
+        int target_index = target_x + Server.board.getCols() * target_y;
         if (Server.board.getElements().get(target_index) instanceof Wall || Server.board.getElements().get(target_index) instanceof Bomb) {
             moving_allowed = false;
         }
@@ -227,7 +227,7 @@ public class ServerThread extends Thread {
         bomb_position.add(bomb.getX());
         bomb_position.add(bomb.getY());
 
-        int target_index = bomb.getX() * Server.board.getRows() + bomb.getY();
+        int target_index = bomb.getX() + Server.board.getCols() * bomb.getY();
         Server.board.setElement(target_index, bomb);
 
         Server.sendAll("drop_bomb", bomb_position);
@@ -249,7 +249,7 @@ public class ServerThread extends Thread {
                     HashMap<Integer, ServerThread> players_threads = Server.getPlayersThreads();
 
                     for (int i = 1; i < Server.board.getCols() - 1; i++) {
-                        int index = i * Server.board.getRows() + bomb.getY();
+                        int index = i + Server.board.getCols() * bomb.getY();
                         Element element = Server.board.getElements().get(index);
                         if (element != null) {
                             element.setActive(false);
@@ -261,7 +261,7 @@ public class ServerThread extends Thread {
                         }
                     }
                     for (int i = 1; i < Server.board.getRows() - 1; i++) {
-                        int index = bomb.getX() * Server.board.getRows() + i;
+                        int index = bomb.getX() + Server.board.getCols() * i;
                         Element element = Server.board.getElements().get(index);
                         if (element != null) {
                             element.setActive(false);

@@ -5,8 +5,9 @@ import java.util.Map;
 
 public abstract class Element {
 
-    private boolean active = true;
-    private boolean breakable = true;
+    protected boolean active = true;
+    protected boolean breakable = true;
+    protected boolean walkable = false;
 
     public static Map export(Element element) throws Exception {
         if (element == null) {
@@ -19,6 +20,8 @@ public abstract class Element {
         } else if (element instanceof Bomb) {
             data.put("type", "bomb");
         }
+        data.put("breakable", element.isBreakable());
+        data.put("walkable", element.isWalkable());
 
         if (data.isEmpty()) {
             throw new Exception("Unknown Element");
@@ -33,6 +36,10 @@ public abstract class Element {
 
     public boolean isBreakable() {
         return this.breakable;
+    }
+
+    public boolean isWalkable() {
+        return this.walkable;
     }
 
     public void setActive(boolean active) {

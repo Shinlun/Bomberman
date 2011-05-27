@@ -20,14 +20,12 @@ public class Board {
         for (int i = 0; i < size; i++) {
             Element element = null;
 
-            if (Math.random() < this.probability_wall) {
-                element = new Wall();
-            }
-
-            if(i <= this.rows || i % this.rows == 0 || (i+1) % this.rows == 0 || size - this.rows < i) {
+            if (i <= this.rows || i % this.rows == 0 || (i + 1) % this.rows == 0 || size - this.rows < i) {
                 Wall wall = new Wall();
                 wall.setBreakable(false);
                 element = wall;
+            } else if (Math.random() < this.probability_wall) {
+                element = new Wall();
             }
 
             this.elements.add(element);
@@ -57,10 +55,10 @@ public class Board {
     }
 
     public List<Element> getElements() {
-       return elements;
-   }
+        return elements;
+    }
 
-   public void setElement(int index, Element element) {
-       this.elements.set(index, element);
-   }
+    public void setElement(int index, Element element) {
+        this.elements.set(index, element);
+    }
 }

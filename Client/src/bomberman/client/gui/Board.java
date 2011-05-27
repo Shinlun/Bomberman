@@ -34,7 +34,7 @@ public class Board extends JPanel {
         for (int j = 0; j < this.rows; j++) {
             for (int i = this.cols - 1; i >= 0; i--) {
                 try {
-                    Element element = this.getElements().get(i * this.cols + j);
+                    Element element = this.getElements().get(j * this.cols + i);
                     if (element == null) {
                         continue;
                     }
@@ -69,11 +69,6 @@ public class Board extends JPanel {
 
         for (int i = 0; i < size; i++) {
             try {
-                if (i <= this.rows || i % this.rows == 0 || (i + 1) % this.rows == 0 || size - this.rows < i) {
-                    Map type = new HashMap();
-                    type.put("type", "unbreakable_wall");
-                    data.set(i, type);
-                }
                 this.getElements().add(Element.factory(data.get(i)));
             } catch (Exception e) {
                 System.out.println(e.getMessage());
@@ -119,7 +114,7 @@ public class Board extends JPanel {
     }
 
     public boolean isSquareWalkable(int i, int j) {
-        Element element = this.getElements().get(i * this.cols + j);
+        Element element = this.getElements().get(j * this.cols + i);
         if (element == null) {
             return true;
         }

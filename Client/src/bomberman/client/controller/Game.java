@@ -1,5 +1,7 @@
 package bomberman.client.controller;
 
+import bomberman.client.elements.Bomb;
+import bomberman.client.elements.Element;
 import bomberman.client.elements.Player;
 import bomberman.client.gui.Board;
 import bomberman.client.gui.Window;
@@ -136,15 +138,26 @@ public class Game extends Thread implements KeyListener {
         }
     }
 
+    public void dropBomb(int x, int y) {
+        int target_index = x + this.board.getCols() * y;
+        Game.getInstance().getBoard().setElement(target_index, new Bomb());
+    }
+
     public void burstBomb(int x, int y) {
-        for (int i = 1; i < this.getBoard().getCols() - 1; i++) {
-            int index = i * this.getBoard().getRows() + y;
-            this.getBoard().setElement(index, null);
+        for (int i = 0; i < this.board.getCols(); i++) {
+            int index = i + this.board.getCols() * y;
+            Element element = this.board.getElements().get(index);
+            if (element != null && element.isBreakable()) {
+                this.board.setElement(index, null);
+            }
         }
 
-        for (int i = 1; i < this.getBoard().getRows() - 1; i++) {
-            int index = x * this.getBoard().getRows() + i;
-            this.getBoard().setElement(index, null);
+        for (int i = 0; i < this.board.getRows(); i++) {
+            int index = x + this.board.getCols() * i;
+            Element element = this.board.getElements().get(index);
+            if (element != null && element.isBreakable()) {
+                this.board.setElement(index, null);
+            }
         }
     }
 

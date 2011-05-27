@@ -1,7 +1,6 @@
 package bomberman.client.model;
 
 import bomberman.client.controller.Game;
-import bomberman.client.elements.Bomb;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -106,9 +105,7 @@ public class Client extends Thread {
             } else if(command.equals("drop_bomb")) {
                 int x = this.convertToInt(((List) obj).get(0));
                 int y = this.convertToInt(((List) obj).get(1));
-                int target_index = x * Game.getInstance().getBoard().getRows() + y;
-                Game.getInstance().getBoard().setElement(target_index, new Bomb());
-                System.out.println(target_index);
+                Game.getInstance().dropBomb(x, y);
             } else if(command.equals("burst_bomb")) {
                 int x = this.convertToInt(((List) obj).get(0));
                 int y = this.convertToInt(((List) obj).get(1));
