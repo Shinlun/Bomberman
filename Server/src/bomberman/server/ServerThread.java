@@ -21,10 +21,18 @@ public class ServerThread extends Thread {
     private int client_id;
     private boolean initialized = false;
     private int nb_bombs = 0;
-    private int bombs_allowed = 1;
+    private int bombs_allowed = 10;
     private int bomb_sleeping_time = 4000;
+    private boolean moving = false;
+    /**
+     * Position of the player
+     */
     private int position_x = 0;
     private int position_y = 0;
+    /**
+     * Squares per second
+     */
+    private double velocity = 3;
 
     public ServerThread(Socket socket, int client_id) {
         this.client_id = client_id;
@@ -144,7 +152,7 @@ public class ServerThread extends Thread {
     public void setRandomPosition() {
         double nb_cases = Server.board.getCols() * Server.board.getRows();
         int i, x, y;
-        Map<Integer, Integer> players_positions = Server.getPlayersPositions();
+        List<Integer> players_positions = Server.getPlayersPositions();
 
         Element element;
         do {
@@ -152,7 +160,9 @@ public class ServerThread extends Thread {
             x = i % Server.board.getCols();
             y = (int) Math.ceil(i / Server.board.getCols());
             element = Server.board.getElements().get(i);
-        } while ((element != null && !element.isWalkable()) || players_positions.containsKey(x) && players_positions.get(x) == y);
+        } while ((element != null && !element.isWalkable())
+                || players_positions.contains(i)
+                || Server.board.isSquareOnFire(x, y));
 
         this.position_x = x;
         this.position_y = y;
@@ -179,35 +189,56 @@ public class ServerThread extends Thread {
         return this.initialized;
     }
 
-    private void move(int diff_x, int diff_y) {
-        Boolean moving_allowed = false;
+    private void move(final int diff_x, final int diff_y) {
+        boolean moving_allowed = true;
 
-        if (Math.abs(diff_x) + Math.abs(diff_y) == 1) {
-            moving_allowed = true;
-        }
-
-        int target_x = this.position_x + diff_x;
-        int target_y = this.position_y + diff_y;
-
-        int target_index = target_x + Server.board.getCols() * target_y;
-        Element target_element = Server.board.getElements().get(target_index);
-        if (target_element != null && target_element.isActive() && !target_element.isWalkable()) {
+        if (this.moving) {
             moving_allowed = false;
+
+        } else if (Math.abs(diff_x) + Math.abs(diff_y) != 1) {
+            moving_allowed = false;
+
+        } else {
+            int target_x = this.position_x + diff_x;
+            int target_y = this.position_y + diff_y;
+            int target_index = target_x + Server.board.getCols() * target_y;
+            Element target_element = Server.board.getElements().get(target_index);
+            if (target_element != null && target_element.isActive() && !target_element.isWalkable()) {
+                moving_allowed = false;
+            }
         }
 
         if (moving_allowed) {
-            this.position_x += diff_x;
-            this.position_y += diff_y;
-
             ArrayList<Integer> move = new ArrayList<Integer>();
             move.add(this.client_id);
-            move.add(this.position_x);
-            move.add(this.position_y);
+            move.add(this.position_x + diff_x);
+            move.add(this.position_y + diff_y);
 
             ArrayList<Integer> exceptions = new ArrayList<Integer>();
             exceptions.add(this.client_id);
 
             Server.sendAllBut("move", move, exceptions);
+
+            new Thread(new Runnable() {
+
+                public void run() {
+                    int move_duration = (int) (1000 / velocity);
+                    try {
+                        Thread.sleep(move_duration / 2);
+                        position_x += diff_x;
+                        position_y += diff_y;
+                        if (Server.board.isSquareOnFire(position_x, position_y)) {
+                            Server.killPlayer(client_id);
+                        }
+
+                        Thread.sleep(move_duration / 2);
+                        moving = false;
+
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+                }
+            }).start();
 
         } else {
             ArrayList<Integer> position = new ArrayList<Integer>();

@@ -93,8 +93,8 @@ public abstract class Element {
                 try {
                     if (!active) {
                         Thread.sleep(rebirth_delay);
-                        Map<Integer, Integer> positions = Server.getPlayersPositions();
-                        if (!(positions.containsKey(x) && positions.get(x) == y)) {
+                        List<Integer> positions = Server.getPlayersPositions();
+                        if (!positions.contains(x + Server.board.getCols() * y) && !Server.board.isSquareOnFire(x, y)) {
                             setActive(true);
                             List element_to_add = new ArrayList();
                             element_to_add.add(Element.export(element));

@@ -9,8 +9,10 @@ import java.util.Map;
 public class Board {
 
     private List<Element> elements;
+    private List<Integer> fire = new ArrayList();
     private int cols = 15;
     private int rows = 15;
+    private int fire_duration = 3000;
     private double probability_breakable_wall = 0.3;
     private double probability_unbreakable_wall = 0.07;
 
@@ -68,5 +70,30 @@ public class Board {
 
     public void setElement(int index, Element element) {
         this.elements.set(index, element);
+    }
+
+    public void addFire(final List<Integer> add_fire) {
+        this.fire.addAll(add_fire);
+
+        new Thread(new Runnable() {
+
+            public void run() {
+                try {
+                    Thread.sleep(fire_duration);
+                } catch (InterruptedException e) {
+                    System.out.println(e.getMessage());
+                }
+                for (int i : add_fire) {
+                    int pos = fire.indexOf(i);
+                    if (pos != -1) {
+                        fire.remove(pos);
+                    }
+                }
+            }
+        }).start();
+    }
+
+    public boolean isSquareOnFire(int x, int y) {
+        return this.fire.contains(x + this.cols * y);
     }
 }

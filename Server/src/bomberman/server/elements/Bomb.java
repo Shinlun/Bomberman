@@ -4,6 +4,7 @@ import bomberman.server.Server;
 import bomberman.server.ServerThread;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class Bomb extends Element {
 
@@ -30,6 +31,7 @@ public class Bomb extends Element {
 
     public void delayBurst() {
         new Thread(new Runnable() {
+
             public void run() {
                 try {
                     Thread.sleep(sleeping_time);
@@ -47,14 +49,12 @@ public class Bomb extends Element {
         }
         burst_ok = true;
 
-        ArrayList<Integer> bomb_position = new ArrayList<Integer>();
-        bomb_position.add(this.x);
-        bomb_position.add(this.y);
-
+        List<Integer> fire = new ArrayList();
         HashMap<Integer, ServerThread> players_threads = Server.getPlayersThreads();
 
         int index = this.x + Server.board.getCols() * this.y;
         Server.board.setElement(index, null);
+        fire.add(index);
         for (ServerThread thread : players_threads.values()) {
             if (thread.getPostionX() == this.x && thread.getPositionY() == this.y) {
                 Server.killPlayer(thread.getClientId());
@@ -66,10 +66,12 @@ public class Bomb extends Element {
             Element element = Server.board.getElements().get(index);
             if (element != null) {
                 if (element.isBreakable()) {
+                    fire.add(index);
                     element.burn();
                 }
                 break;
             }
+            fire.add(index);
             for (ServerThread thread : players_threads.values()) {
                 if (thread.getPostionX() == i && thread.getPositionY() == this.y) {
                     Server.killPlayer(thread.getClientId());
@@ -81,10 +83,12 @@ public class Bomb extends Element {
             Element element = Server.board.getElements().get(index);
             if (element != null) {
                 if (element.isBreakable()) {
+                    fire.add(index);
                     element.burn();
                 }
                 break;
             }
+            fire.add(index);
             for (ServerThread thread : players_threads.values()) {
                 if (thread.getPostionX() == i && thread.getPositionY() == this.y) {
                     Server.killPlayer(thread.getClientId());
@@ -96,10 +100,12 @@ public class Bomb extends Element {
             Element element = Server.board.getElements().get(index);
             if (element != null) {
                 if (element.isBreakable()) {
+                    fire.add(index);
                     element.burn();
                 }
                 break;
             }
+            fire.add(index);
             for (ServerThread thread : players_threads.values()) {
                 if (thread.getPostionX() == this.x && thread.getPositionY() == i) {
                     Server.killPlayer(thread.getClientId());
@@ -111,10 +117,12 @@ public class Bomb extends Element {
             Element element = Server.board.getElements().get(index);
             if (element != null) {
                 if (element.isBreakable()) {
+                    fire.add(index);
                     element.burn();
                 }
                 break;
             }
+            fire.add(index);
             for (ServerThread thread : players_threads.values()) {
                 if (thread.getPostionX() == this.x && thread.getPositionY() == i) {
                     Server.killPlayer(thread.getClientId());
@@ -122,7 +130,13 @@ public class Bomb extends Element {
             }
         }
 
+        Server.board.addFire(fire);
+
+        ArrayList<Integer> bomb_position = new ArrayList<Integer>();
+        bomb_position.add(this.x);
+        bomb_position.add(this.y);
         Server.sendAll("burst_bomb", bomb_position);
+
         Server.getPlayersThreads().get(this.client_id).decreaseNbBombs();
     }
 }

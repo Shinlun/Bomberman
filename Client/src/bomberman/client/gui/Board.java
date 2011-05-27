@@ -21,6 +21,7 @@ public class Board extends JPanel {
     private int cols;
     private int rows;
     private int unit_pixels = 10;
+    private int fire_duration = 3000;
 
     public Board() {
         super();
@@ -140,7 +141,7 @@ public class Board extends JPanel {
 
             public void run() {
                 try {
-                    Thread.sleep(3000);
+                    Thread.sleep(fire_duration);
                 } catch (InterruptedException e) {
                     System.out.println(e.getMessage());
                 }

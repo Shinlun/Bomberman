@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Server {
@@ -48,6 +49,7 @@ public class Server {
     public static HashMap<Integer, ServerThread> getPlayersThreads() {
         return players_threads;
     }
+
     public static Map<Integer, Map> getPlayersList(int client_id) {
         Map<Integer, Map> players = new HashMap<Integer, Map>();
 
@@ -66,13 +68,11 @@ public class Server {
         return players;
     }
 
-    public static Map<Integer, Integer> getPlayersPositions() {
-        Map<Integer, Integer> positions = new HashMap<Integer, Integer>();
-
+    public static List<Integer> getPlayersPositions() {
+        List<Integer> positions = new ArrayList<Integer>();
         for (ServerThread player_thread : players_threads.values()) {
-            positions.put(player_thread.getPostionX(), player_thread.getPositionY());
+            positions.add(player_thread.getPostionX() + board.getCols() * player_thread.getPositionY());
         }
-
         return positions;
     }
 
