@@ -73,8 +73,15 @@ public abstract class Element {
     }
 
     public void burn() {
-        this.setActive(false);
-        this.delayRebirth();
+        if (this.active) {
+            this.setActive(false);
+            this.delayRebirth();
+
+            List element_to_del = new ArrayList();
+            element_to_del.add(x);
+            element_to_del.add(y);
+            Server.sendAll("del_element", element_to_del);
+        }
     }
 
     public void setRebirthDelay(int delay) {

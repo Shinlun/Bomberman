@@ -103,19 +103,29 @@ public class Client extends Thread {
                 int x = this.convertToInt(((List) obj).get(1));
                 int y = this.convertToInt(((List) obj).get(2));
                 Game.getInstance().getPlayer(player_id).startMove(x, y);
-            } else if(command.equals("drop_bomb")) {
+
+            } else if (command.equals("drop_bomb")) {
                 int x = this.convertToInt(((List) obj).get(0));
                 int y = this.convertToInt(((List) obj).get(1));
                 Game.getInstance().dropBomb(x, y);
-            } else if(command.equals("burst_bomb")) {
-                int x = this.convertToInt(((List) obj).get(0));
-                int y = this.convertToInt(((List) obj).get(1));
-                Game.getInstance().burstBomb(x, y);
-            } else if(command.equals("add_element")) {
+
+            } else if (command.equals("burst_bomb")) {
+                ArrayList<Integer> fire = new ArrayList<Integer>();
+                for (Object i : (List) obj) {
+                    fire.add(this.convertToInt(i));
+                }
+                Game.getInstance().getBoard().addFire(fire);
+
+            } else if (command.equals("add_element")) {
                 Element element = Element.factory((Map) ((List) obj).get(0));
                 int x = this.convertToInt(((List) obj).get(1));
                 int y = this.convertToInt(((List) obj).get(2));
                 Game.getInstance().addElement(element, x, y);
+
+            } else if (command.equals("del_element")) {
+                int x = this.convertToInt(((List) obj).get(0));
+                int y = this.convertToInt(((List) obj).get(1));
+                Game.getInstance().delElement(x, y);
             }
 
         } catch (Exception e) {
@@ -157,7 +167,7 @@ public class Client extends Thread {
         this.send("move", obj);
     }
 
-    public void dropBomb(){
+    public void dropBomb() {
         this.send("drop_bomb", "");
     }
 }

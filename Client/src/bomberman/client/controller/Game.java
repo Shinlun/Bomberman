@@ -145,68 +145,14 @@ public class Game extends Thread implements KeyListener {
         Game.getInstance().getBoard().setElement(target_index, new Bomb());
     }
 
-    public void burstBomb(int x, int y) {
-        List<Integer> fire = new ArrayList();
-
-        int index = x + this.board.getCols() * y;
-        this.board.setElement(index, null);
-        fire.add(index);
-
-        for (int i = x + 1; i < this.board.getCols(); i++) {
-            index = i + this.board.getCols() * y;
-            Element element = this.board.getElements().get(index);
-            if (element != null) {
-                if (element.isBreakable()) {
-                    this.board.setElement(index, null);
-                    fire.add(index);
-                }
-                break;
-            }
-            fire.add(index);
-        }
-        for (int i = x - 1; i >= 0; i--) {
-            index = i + this.board.getCols() * y;
-            Element element = this.board.getElements().get(index);
-            if (element != null) {
-                if (element.isBreakable()) {
-                    this.board.setElement(index, null);
-                    fire.add(index);
-                }
-                break;
-            }
-            fire.add(index);
-        }
-        for (int i = y + 1; i < this.board.getRows(); i++) {
-            index = x + this.board.getCols() * i;
-            Element element = this.board.getElements().get(index);
-            if (element != null) {
-                if (element.isBreakable()) {
-                    this.board.setElement(index, null);
-                    fire.add(index);
-                }
-                break;
-            }
-            fire.add(index);
-        }
-        for (int i = y - 1; i >= 0; i--) {
-            index = x + this.board.getCols() * i;
-            Element element = this.board.getElements().get(index);
-            if (element != null) {
-                if (element.isBreakable()) {
-                    this.board.setElement(index, null);
-                    fire.add(index);
-                }
-                break;
-            }
-            fire.add(index);
-        }
-
-        this.board.addFire(fire);
-    }
-
     public void addElement(Element element, int x, int y) {
         int index = x + this.board.getCols() * y;
         Game.getInstance().getBoard().setElement(index, element);
+    }
+
+    public void delElement(int x, int y) {
+        int index = x + this.board.getCols() * y;
+        Game.getInstance().getBoard().setElement(index, null);
     }
 
     public void keyTyped(KeyEvent e) {
