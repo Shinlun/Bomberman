@@ -16,6 +16,7 @@ public class Board extends JPanel {
 
     private List<Element> elements = null;
     private List<Integer> fire = new ArrayList();
+    private Image sprite_floor;
     private Image fire_image;
     private int cols;
     private int rows;
@@ -23,6 +24,7 @@ public class Board extends JPanel {
 
     public Board() {
         super();
+        this.sprite_floor = Window.getInstance().getToolkit().getImage("images/sprite_floor.png");
         this.fire_image = Window.getInstance().getToolkit().getImage("images/fire.png");
     }
 
@@ -40,6 +42,8 @@ public class Board extends JPanel {
                     int index = j * this.cols + i;
                     int x = this.getPosX(i, j) * this.unit_pixels;
                     int y = this.getPosY(i, j) * this.unit_pixels;
+
+                    g.drawImage(this.sprite_floor, x, y, this);
 
                     Element element = this.getElements().get(index);
                     if (element != null) {
