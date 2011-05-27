@@ -161,6 +161,11 @@ public class Game extends Thread implements KeyListener {
         }
     }
 
+    public void addElement(Element element, int x, int y) {
+        int index = x + this.board.getCols() * y;
+        Game.getInstance().getBoard().setElement(index, element);
+    }
+
     public void keyTyped(KeyEvent e) {
         if (e.getKeyChar() == KeyEvent.VK_SPACE) {
             Client.getInstance().dropBomb();

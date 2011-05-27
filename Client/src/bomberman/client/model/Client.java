@@ -1,6 +1,7 @@
 package bomberman.client.model;
 
 import bomberman.client.controller.Game;
+import bomberman.client.elements.Element;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -110,6 +111,11 @@ public class Client extends Thread {
                 int x = this.convertToInt(((List) obj).get(0));
                 int y = this.convertToInt(((List) obj).get(1));
                 Game.getInstance().burstBomb(x, y);
+            } else if(command.equals("add_element")) {
+                Element element = Element.factory((Map) ((List) obj).get(0));
+                int x = this.convertToInt(((List) obj).get(1));
+                int y = this.convertToInt(((List) obj).get(2));
+                Game.getInstance().addElement(element, x, y);
             }
 
         } catch (Exception e) {

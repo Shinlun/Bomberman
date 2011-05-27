@@ -2,6 +2,7 @@ package bomberman.server;
 
 import bomberman.server.elements.Bomb;
 import bomberman.server.elements.Element;
+import bomberman.server.elements.Wall;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -259,6 +260,9 @@ public class ServerThread extends Thread {
                                 Server.board.setElement(index, null);
                             } else {
                                 element.setActive(false);
+                                if (element instanceof Wall) {
+                                    resetElement(i, bomb.getY());
+                                }
                             }
                         }
                         for (ServerThread thread : players_threads.values()) {
@@ -275,6 +279,9 @@ public class ServerThread extends Thread {
                                 Server.board.setElement(index, null);
                             } else {
                                 element.setActive(false);
+                                if (element instanceof Wall) {
+                                    resetElement(bomb.getX(), i);
+                                }
                             }
                         }
                         for (ServerThread thread : players_threads.values()) {
@@ -288,6 +295,35 @@ public class ServerThread extends Thread {
                     current_thread.nb_bombs--;
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    public void resetElement(final int x, final int y) {
+        new Thread(new Runnable() {
+
+            public void run() {
+                try {
+                    int index = x + Server.board.getCols() * y;
+                    Element element = Server.board.getElements().get(index);
+                    if (element != null && !element.isActive()) {
+                        Thread.sleep(element.getRebirthDelay());
+                        Map<Integer, Integer> positions = Server.getPlayersPositions();
+                        System.out.println(positions);
+                        if (!(positions.containsKey(x) && positions.get(x) == y)) {
+                            element.setActive(true);
+                            List element_to_add = new ArrayList();
+                            element_to_add.add(Element.export(element));
+                            element_to_add.add(x);
+                            element_to_add.add(y);
+                            Server.sendAll("add_element", element_to_add);
+                        } else {
+                            resetElement(x, y);
+                        }
+                    }
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
                 }
             }
         }).start();

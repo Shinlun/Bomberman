@@ -8,6 +8,7 @@ public abstract class Element {
     protected boolean active = true;
     protected boolean breakable = true;
     protected boolean walkable = false;
+    private int rebirth_delay = 10000;
 
     public static Map export(Element element) throws Exception {
         if (element == null || !element.active) {
@@ -48,5 +49,13 @@ public abstract class Element {
 
     public boolean isActive() {
         return this.active;
+    }
+
+    public void setRebirthDelay(int delay) {
+        this.rebirth_delay = delay;
+    }
+
+    public int getRebirthDelay() {
+        return this.rebirth_delay;
     }
 }
