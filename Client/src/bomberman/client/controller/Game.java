@@ -8,7 +8,9 @@ import bomberman.client.gui.Window;
 import bomberman.client.model.Client;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Game extends Thread implements KeyListener {
@@ -144,12 +146,15 @@ public class Game extends Thread implements KeyListener {
     }
 
     public void burstBomb(int x, int y) {
+        List<Integer> fire = new ArrayList();
+
         for (int i = 0; i < this.board.getCols(); i++) {
             int index = i + this.board.getCols() * y;
             Element element = this.board.getElements().get(index);
             if (element != null && element.isBreakable()) {
                 this.board.setElement(index, null);
             }
+            fire.add(index);
         }
 
         for (int i = 0; i < this.board.getRows(); i++) {
@@ -158,7 +163,10 @@ public class Game extends Thread implements KeyListener {
             if (element != null && element.isBreakable()) {
                 this.board.setElement(index, null);
             }
+            fire.add(index);
         }
+
+        this.board.addFire(fire);
     }
 
     public void addElement(Element element, int x, int y) {
