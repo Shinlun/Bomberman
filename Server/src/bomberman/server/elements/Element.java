@@ -1,10 +1,15 @@
 package bomberman.server.elements;
 
+import bomberman.server.Server;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class Element {
 
+    protected int x;
+    protected int y;
     protected boolean active = true;
     protected boolean breakable = true;
     protected boolean walkable = false;
@@ -31,6 +36,22 @@ public abstract class Element {
 
     }
 
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public int getX() {
+        return this.x;
+    }
+
+    public int getY() {
+        return this.y;
+    }
+
     public void setBreakable(boolean breakable) {
         this.breakable = breakable;
     }
@@ -51,11 +72,43 @@ public abstract class Element {
         return this.active;
     }
 
+    public void burn() {
+        this.setActive(false);
+        this.delayReborn();
+    }
+
     public void setRebirthDelay(int delay) {
         this.rebirth_delay = delay;
     }
 
     public int getRebirthDelay() {
         return this.rebirth_delay;
+    }
+
+    public void delayReborn() {
+        final Element element = this;
+        new Thread(new Runnable() {
+
+            public void run() {
+                try {
+                    if (!active) {
+                        Thread.sleep(rebirth_delay);
+                        Map<Integer, Integer> positions = Server.getPlayersPositions();
+                        if (!(positions.containsKey(x) && positions.get(x) == y)) {
+                            setActive(true);
+                            List element_to_add = new ArrayList();
+                            element_to_add.add(Element.export(element));
+                            element_to_add.add(x);
+                            element_to_add.add(y);
+                            Server.sendAll("add_element", element_to_add);
+                        } else {
+                            element.delayReborn();
+                        }
+                    }
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }).start();
     }
 }

@@ -20,7 +20,7 @@ public class Game extends Thread implements KeyListener {
     private Map<Integer, Player> players = new HashMap();
     private int player_id;
     private boolean started = false;
-    private int fps = 50;
+    private int fps = 25;
     private boolean key_up = false;
     private boolean key_down = false;
     private boolean key_left = false;

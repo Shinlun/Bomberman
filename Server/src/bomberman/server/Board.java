@@ -11,7 +11,8 @@ public class Board {
     private List<Element> elements;
     private int cols = 15;
     private int rows = 15;
-    private double probability_wall = 0.3;
+    private double probability_breakable_wall = 0.3;
+    private double probability_unbreakable_wall = 0.07;
 
     public void generate() {
         this.elements = new ArrayList<Element>();
@@ -21,11 +22,18 @@ public class Board {
             Element element = null;
 
             if (i <= this.rows || i % this.rows == 0 || (i + 1) % this.rows == 0 || size - this.rows < i) {
-                Wall wall = new Wall();
-                wall.setBreakable(false);
-                element = wall;
-            } else if (Math.random() < this.probability_wall) {
                 element = new Wall();
+                element.setBreakable(false);
+            } else if (Math.random() < this.probability_breakable_wall) {
+                element = new Wall();
+            } else if (Math.random() < this.probability_unbreakable_wall) {
+                element = new Wall();
+                element.setBreakable(false);
+            }
+
+            if (element != null) {
+                element.setX(i % this.cols);
+                element.setY((int) Math.ceil(i / this.rows));
             }
 
             this.elements.add(element);

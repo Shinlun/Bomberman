@@ -2,7 +2,6 @@ package bomberman.server;
 
 import bomberman.server.elements.Bomb;
 import bomberman.server.elements.Element;
-import bomberman.server.elements.Wall;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,7 +9,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.json.simple.JSONValue;
@@ -221,144 +219,26 @@ public class ServerThread extends Thread {
     }
 
     private void dropBomb() {
+        this.nb_bombs++;
         Bomb bomb = new Bomb();
         bomb.setX(this.position_x);
         bomb.setY(this.position_y);
         bomb.setSleepingTime(this.bomb_sleeping_time);
-
-        ArrayList<Integer> bomb_position = new ArrayList<Integer>();
-        bomb_position.add(bomb.getX());
-        bomb_position.add(bomb.getY());
+        bomb.setClientId(this.client_id);
+        bomb.delayBurst();
 
         int target_index = bomb.getX() + Server.board.getCols() * bomb.getY();
         Server.board.setElement(target_index, bomb);
 
+        ArrayList<Integer> bomb_position = new ArrayList<Integer>();
+        bomb_position.add(bomb.getX());
+        bomb_position.add(bomb.getY());
         Server.sendAll("drop_bomb", bomb_position);
-
-        this.nb_bombs++;
-        this.burstBomb(bomb);
     }
 
-    private void burstBomb(final Bomb bomb) {
-        final ServerThread current_thread = this;
-        new Thread(new Runnable() {
-
-            public void run() {
-                try {
-                    ArrayList<Integer> bomb_position = new ArrayList<Integer>();
-                    bomb_position.add(bomb.getX());
-                    bomb_position.add(bomb.getY());
-                    Thread.sleep(bomb.getSleepingTime());
-
-                    HashMap<Integer, ServerThread> players_threads = Server.getPlayersThreads();
-
-                    int index = bomb.getX() + Server.board.getCols() * bomb.getY();
-                    Server.board.setElement(index, null);
-                    for (ServerThread thread : players_threads.values()) {
-                        if (thread.getPostionX() == bomb.getX() && thread.getPositionY() == bomb.getY()) {
-                            Server.killPlayer(thread.getClientId());
-                        }
-                    }
-
-                    for (int i = bomb.getX() + 1; i < Server.board.getCols(); i++) {
-                        index = i + Server.board.getCols() * bomb.getY();
-                        Element element = Server.board.getElements().get(index);
-                        if (element != null) {
-                            if (element.isBreakable()) {
-                                element.setActive(false);
-                                resetElement(i, bomb.getY());
-                            }
-                            break;
-                        }
-                        for (ServerThread thread : players_threads.values()) {
-                            if (thread.getPostionX() == i && thread.getPositionY() == bomb.getY()) {
-                                Server.killPlayer(thread.getClientId());
-                            }
-                        }
-                    }
-                    for (int i = bomb.getX() - 1; i >= 0; i--) {
-                        index = i + Server.board.getCols() * bomb.getY();
-                        Element element = Server.board.getElements().get(index);
-                        if (element != null) {
-                            if (element.isBreakable()) {
-                                element.setActive(false);
-                                resetElement(i, bomb.getY());
-                            }
-                            break;
-                        }
-                        for (ServerThread thread : players_threads.values()) {
-                            if (thread.getPostionX() == i && thread.getPositionY() == bomb.getY()) {
-                                Server.killPlayer(thread.getClientId());
-                            }
-                        }
-                    }
-                    for (int i = bomb.getY() + 1; i < Server.board.getRows(); i++) {
-                        index = bomb.getX() + Server.board.getCols() * i;
-                        Element element = Server.board.getElements().get(index);
-                        if (element != null) {
-                            if (element.isBreakable()) {
-                                element.setActive(false);
-                                resetElement(bomb.getX(), i);
-                            }
-                            break;
-                        }
-                        for (ServerThread thread : players_threads.values()) {
-                            if (thread.getPostionX() == bomb.getX() && thread.getPositionY() == i) {
-                                Server.killPlayer(thread.getClientId());
-                            }
-                        }
-                    }
-                    for (int i = bomb.getY() - 1; i >= 0; i--) {
-                        index = bomb.getX() + Server.board.getCols() * i;
-                        Element element = Server.board.getElements().get(index);
-                        if (element != null) {
-                            if (element.isBreakable()) {
-                                element.setActive(false);
-                                resetElement(bomb.getX(), i);
-                            }
-                            break;
-                        }
-                        for (ServerThread thread : players_threads.values()) {
-                            if (thread.getPostionX() == bomb.getX() && thread.getPositionY() == i) {
-                                Server.killPlayer(thread.getClientId());
-                            }
-                        }
-                    }
-
-                    Server.sendAll("burst_bomb", bomb_position);
-                    current_thread.nb_bombs--;
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-    }
-
-    public void resetElement(final int x, final int y) {
-        new Thread(new Runnable() {
-
-            public void run() {
-                try {
-                    int index = x + Server.board.getCols() * y;
-                    Element element = Server.board.getElements().get(index);
-                    if (element != null && !element.isActive()) {
-                        Thread.sleep(element.getRebirthDelay());
-                        Map<Integer, Integer> positions = Server.getPlayersPositions();
-                        if (!(positions.containsKey(x) && positions.get(x) == y)) {
-                            element.setActive(true);
-                            List element_to_add = new ArrayList();
-                            element_to_add.add(Element.export(element));
-                            element_to_add.add(x);
-                            element_to_add.add(y);
-                            Server.sendAll("add_element", element_to_add);
-                        } else {
-                            resetElement(x, y);
-                        }
-                    }
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                }
-            }
-        }).start();
+    public void decreaseNbBombs() {
+        if (this.nb_bombs > 0) {
+            this.nb_bombs--;
+        }
     }
 }
