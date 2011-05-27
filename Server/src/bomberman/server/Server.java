@@ -45,6 +45,9 @@ public class Server {
         }
     }
 
+    public static HashMap<Integer, ServerThread> getPlayersThreads() {
+        return players_threads;
+    }
     public static Map<Integer, Map> getPlayersList(int client_id) {
         Map<Integer, Map> players = new HashMap<Integer, Map>();
 
@@ -76,5 +79,19 @@ public class Server {
     public static void delPlayer(int client_id) {
         players_threads.remove(client_id);
         sendAll("del_player", client_id);
+    }
+
+    public static void killPlayer(int client_id) {
+        ArrayList<Integer> position = new ArrayList<Integer>();
+        players_threads.get(client_id).setRandomPosition();
+        position.add(players_threads.get(client_id).getPostionX());
+        position.add(players_threads.get(client_id).getPositionY());
+
+        players_threads.get(client_id).send("reposition", position);
+
+        position.add(0, client_id);
+        ArrayList<Integer> exceptions = new ArrayList<Integer>();
+        exceptions.add(client_id);
+        sendAllBut("move", position, exceptions);
     }
 }

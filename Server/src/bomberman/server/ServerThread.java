@@ -1,7 +1,6 @@
 package bomberman.server;
 
 import bomberman.server.elements.Bomb;
-import bomberman.server.elements.Element;
 import bomberman.server.elements.Wall;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,6 +9,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.json.simple.JSONValue;
@@ -142,7 +142,7 @@ public class ServerThread extends Thread {
         this.send("board", Server.board.getData());
     }
 
-    private void setRandomPosition() {
+    public void setRandomPosition() {
         double nb_cases = Server.board.getCols() * Server.board.getRows();
         int i, x, y;
         Map<Integer, Integer> players_positions = Server.getPlayersPositions();
@@ -244,13 +244,25 @@ public class ServerThread extends Thread {
                     bomb_position.add(bomb.getY());
                     Thread.sleep(bomb.getSleepingTime());
 
+                    HashMap<Integer, ServerThread> players_threads = Server.getPlayersThreads();
+
                     for(int i = 1 ; i < Server.board.getCols() - 1 ; i++) {
                         int index = i * Server.board.getRows() + bomb.getY();
                         Server.board.setElement(index, null);
+                        for(ServerThread thread : players_threads.values()) {
+                            if(thread.getPostionX() == i && thread.getPositionY() == bomb.getY()) {
+                                Server.killPlayer(thread.getClientId());
+                            }
+                        }
                     }
                     for(int i = 1 ; i < Server.board.getRows() - 1 ; i++) {
                         int index = bomb.getX() * Server.board.getRows() + i;
                         Server.board.setElement(index, null);
+                        for(ServerThread thread : players_threads.values()) {
+                            if(thread.getPostionX() == bomb.getX() && thread.getPositionY() == i) {
+                                Server.killPlayer(thread.getClientId());
+                            }
+                        }
                     }
 
                     Server.sendAll("burst_bomb", bomb_position);
