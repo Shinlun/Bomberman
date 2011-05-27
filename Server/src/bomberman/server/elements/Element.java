@@ -10,12 +10,12 @@ public abstract class Element {
     protected boolean walkable = false;
 
     public static Map export(Element element) throws Exception {
-        if (element == null) {
+        if (element == null || !element.active) {
             return null;
         }
         Map data = new HashMap();
 
-        if (element instanceof Wall && element.active) {
+        if (element instanceof Wall) {
             data.put("type", "wall");
         } else if (element instanceof Bomb) {
             data.put("type", "bomb");

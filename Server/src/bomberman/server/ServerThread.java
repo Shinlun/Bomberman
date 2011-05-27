@@ -192,7 +192,7 @@ public class ServerThread extends Thread {
 
         int target_index = target_x + Server.board.getCols() * target_y;
         Element target_element = Server.board.getElements().get(target_index);
-        if (target_element != null && !(target_element.isActive() && target_element.isWalkable())) {
+        if (target_element != null && target_element.isActive() && !target_element.isWalkable()) {
             moving_allowed = false;
         }
 
