@@ -6,6 +6,7 @@ import java.util.Map;
 public abstract class Element {
 
     protected Image image;
+    protected boolean walkable = false;
 
     public static Element factory(Map data) throws Exception {
         if (data == null) {
@@ -15,13 +16,13 @@ public abstract class Element {
 
         if (data.get("type").equals("wall")) {
             element = new Wall();
-        } else if(data.get("type").equals("unbreakable_wall")) {
+        } else if (data.get("type").equals("unbreakable_wall")) {
             Wall wall = new Wall();
             wall.setBreakable(false);
             element = wall;
         } else if (data.get("type").equals("bomb")) {
             element = new Bomb();
-        } else if(data.get("type").equals("bonus")) {
+        } else if (data.get("type").equals("bonus")) {
             element = new Bonus();
         }
 
@@ -34,5 +35,9 @@ public abstract class Element {
 
     public Image getImage() {
         return this.image;
+    }
+
+    public boolean isWalkable() {
+        return this.walkable;
     }
 }

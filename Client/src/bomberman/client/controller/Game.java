@@ -1,11 +1,9 @@
 package bomberman.client.controller;
 
 import bomberman.client.elements.Player;
-import bomberman.client.elements.Wall;
 import bomberman.client.gui.Board;
 import bomberman.client.gui.Window;
 import bomberman.client.model.Client;
-import com.sun.corba.se.spi.activation.Server;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashMap;
@@ -61,13 +59,13 @@ public class Game extends Thread implements KeyListener {
                 {
                     Player player = this.getCurrentPlayer();
                     if (player.getMovePogression() == 1) {
-                        if (this.key_up) {
+                        if (this.key_up && this.board.isSquareWalkable(player.getX(), player.getY() - 1)) {
                             player.startMoveRelative(0, -1);
-                        } else if (this.key_down) {
+                        } else if (this.key_down && this.board.isSquareWalkable(player.getX(), player.getY() + 1)) {
                             player.startMoveRelative(0, 1);
-                        } else if (this.key_left) {
+                        } else if (this.key_left && this.board.isSquareWalkable(player.getX() - 1, player.getY())) {
                             player.startMoveRelative(-1, 0);
-                        } else if (this.key_right) {
+                        } else if (this.key_right && this.board.isSquareWalkable(player.getX() + 1, player.getY())) {
                             player.startMoveRelative(1, 0);
                         }
                     }
@@ -139,12 +137,12 @@ public class Game extends Thread implements KeyListener {
     }
 
     public void burstBomb(int x, int y) {
-        for(int i = 1 ; i < this.getBoard().getCols() - 1 ; i++) {
+        for (int i = 1; i < this.getBoard().getCols() - 1; i++) {
             int index = i * this.getBoard().getRows() + y;
             this.getBoard().setElement(index, null);
         }
 
-        for(int i = 1 ; i < this.getBoard().getRows() - 1 ; i++) {
+        for (int i = 1; i < this.getBoard().getRows() - 1; i++) {
             int index = x * this.getBoard().getRows() + i;
             this.getBoard().setElement(index, null);
         }

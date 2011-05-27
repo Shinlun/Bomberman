@@ -84,14 +84,9 @@ public class Server {
     public static void killPlayer(int client_id) {
         ArrayList<Integer> position = new ArrayList<Integer>();
         players_threads.get(client_id).setRandomPosition();
+        position.add(client_id);
         position.add(players_threads.get(client_id).getPostionX());
         position.add(players_threads.get(client_id).getPositionY());
-
-        players_threads.get(client_id).send("reposition", position);
-
-        position.add(0, client_id);
-        ArrayList<Integer> exceptions = new ArrayList<Integer>();
-        exceptions.add(client_id);
-        sendAllBut("move", position, exceptions);
+        sendAll("reposition", position);
     }
 }

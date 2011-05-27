@@ -117,4 +117,12 @@ public class Board extends JPanel {
     private int getPosY(int i, int j) {
         return 2 * j - i + this.cols;
     }
+
+    public boolean isSquareWalkable(int i, int j) {
+        Element element = this.getElements().get(i * this.cols + j);
+        if (element == null) {
+            return true;
+        }
+        return element.isWalkable();
+    }
 }
