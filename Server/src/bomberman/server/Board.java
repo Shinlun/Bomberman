@@ -59,4 +59,8 @@ public class Board {
     public List<Element> getElements() {
        return elements;
    }
+
+   public void setElement(int index, Element element) {
+       this.elements.set(index, element);
+   }
 }

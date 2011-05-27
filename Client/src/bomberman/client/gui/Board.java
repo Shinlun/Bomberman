@@ -94,8 +94,20 @@ public class Board extends JPanel {
         return elements;
     }
 
+    public void setElement(int index, Element element) {
+        this.elements.set(index, element);
+    }
+
     public void setCols(int cols) {
         this.cols = cols;
+    }
+
+    public int getRows() {
+        return this.rows;
+    }
+
+    public int getCols() {
+        return this.cols;
     }
 
     private int getPosX(int i, int j) {

@@ -26,7 +26,7 @@ public class Settings extends JPanel implements ActionListener {
 
         this.hostTF = new JTextField("127.0.0.1");
         this.portTF = new JTextField("1337");
-        JButton button = new JButton("Porc au caramel");
+        JButton button = new JButton("Commencer la partie");
 
         this.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
@@ -35,13 +35,13 @@ public class Settings extends JPanel implements ActionListener {
 
         c.gridx = 0;
         c.gridy = 0;
-        this.add(new JLabel("Rouleau de printemps :"), c);
+        this.add(new JLabel("Adresse IP :"), c);
         c.gridx = 1;
         c.gridy = 0;
         this.add(hostTF, c);
         c.gridx = 0;
         c.gridy = 1;
-        this.add(new JLabel("Nems vapeur :"), c);
+        this.add(new JLabel("Port :"), c);
         c.gridx = 1;
         c.gridy = 1;
         this.add(portTF, c);
@@ -58,19 +58,19 @@ public class Settings extends JPanel implements ActionListener {
 
         try {
             if (!(host + ".").matches("^((1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])\\.){4}$")) {
-                throw new Exception("Rouleau de printemps invalide !");
+                throw new Exception("Adresse IP invalide!");
             }
             Integer port;
             try {
                 port = Integer.parseInt(this.portTF.getText());
             } catch (Exception ex) {
-                throw new Exception("Nems vapeur invalides !");
+                throw new Exception("Port invalide!");
             }
 
             try {
                 Client.getInstance().connect(host, port);
             } catch (Exception ex) {
-                throw new Exception("Erreur lors de la cuisson !");
+                throw new Exception("Echec de la connexion!");
             }
             Game.getInstance().newGame();
 

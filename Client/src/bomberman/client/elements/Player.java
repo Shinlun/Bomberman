@@ -26,10 +26,38 @@ public class Player {
      */
     private double velocity = 3;
 
+    private int nb_bombs = 0;
+    private int bombs_allowed = 1;
+    private int bomb_sleeping_time = 4000;
+
     public Player(int x, int y) {
         this.x = x;
         this.y = y;
         this.image = Window.getInstance().getToolkit().getImage("images/player.png");
+    }
+
+    public void setNbBombs(int nb_bombs) {
+        this.nb_bombs = nb_bombs;
+    }
+
+    public void setBombsAllowed(int nb_bombs) {
+        this.bombs_allowed = nb_bombs;
+    }
+
+    public void setBombSleepingTime(int sleeping_time) {
+        this.bomb_sleeping_time = sleeping_time;
+    }
+
+    public int getNbBombs() {
+        return this.nb_bombs;
+   }
+
+    public int getBombsAllowed() {
+        return this.bombs_allowed;
+    }
+
+    public int getBombSleepingTime() {
+        return this.bomb_sleeping_time;
     }
 
     public Image getImage() {

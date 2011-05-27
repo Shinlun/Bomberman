@@ -1,6 +1,7 @@
 package bomberman.server;
 
 import bomberman.server.elements.Bomb;
+import bomberman.server.elements.Element;
 import bomberman.server.elements.Wall;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +10,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.json.simple.JSONValue;
@@ -29,7 +29,7 @@ public class ServerThread extends Thread {
 
     public ServerThread(Socket socket, int client_id) {
         this.client_id = client_id;
-        System.out.println("Accès à la cuisine autorisé pour " + socket.getInetAddress());
+        System.out.println("Le joueur " + client_id + " a rejoint la partie!");
         this.socket = socket;
         try {
             this.out = new PrintWriter(socket.getOutputStream(), true);
@@ -78,7 +78,7 @@ public class ServerThread extends Thread {
             System.out.println(e.getMessage());
         } finally {
             try {
-                System.out.println("Viré du resto !");
+                System.out.println("Le joueur " + client_id + " a quitté la partie");
                 socket.close();
                 Server.delPlayer(this.client_id);
             } catch (IOException e) {
@@ -148,9 +148,9 @@ public class ServerThread extends Thread {
         Map<Integer, Integer> players_positions = Server.getPlayersPositions();
 
         do {
-            i = (int) (Math.random() * nb_cases);
-            x = i % Server.board.getCols();
-            y = (int) Math.ceil(i / Server.board.getCols());
+            i = (int) Math.round(Math.random() * nb_cases);
+            x = (int) Math.ceil(i / Server.board.getRows());
+            y = i % Server.board.getRows();
         } while (Server.board.getElements().get(i) != null || players_positions.containsKey(x) && players_positions.get(x) == y);
 
         this.position_x = x;
@@ -185,6 +185,14 @@ public class ServerThread extends Thread {
             moving_allowed = true;
         }
 
+        int target_x = this.position_x + diff_x;
+        int target_y = this.position_y + diff_y;
+
+        int target_index = target_x * Server.board.getRows() + target_y;
+        if (Server.board.getElements().get(target_index) instanceof Wall || Server.board.getElements().get(target_index) instanceof Bomb) {
+            moving_allowed = false;
+        }
+
         if (moving_allowed) {
             this.position_x += diff_x;
             this.position_y += diff_y;
@@ -217,12 +225,16 @@ public class ServerThread extends Thread {
         bomb_position.add(bomb.getX());
         bomb_position.add(bomb.getY());
 
+        int target_index = bomb.getX() * Server.board.getRows() + bomb.getY();
+        Server.board.setElement(target_index, bomb);
+
         Server.sendAll("drop_bomb", bomb_position);
+
         this.nb_bombs++;
-        this.burstBomb(bomb);
+        this.burstBomb(bomb, this);
     }
 
-    private void burstBomb(final Bomb bomb) {
+    private void burstBomb(final Bomb bomb, final ServerThread thread) {
         new Thread(new Runnable() {
 
             public void run() {
@@ -231,13 +243,22 @@ public class ServerThread extends Thread {
                     bomb_position.add(bomb.getX());
                     bomb_position.add(bomb.getY());
                     Thread.sleep(bomb.getSleepingTime());
+
+                    for(int i = 1 ; i < Server.board.getCols() - 1 ; i++) {
+                        int index = i * Server.board.getRows() + bomb.getY();
+                        Server.board.setElement(index, null);
+                    }
+                    for(int i = 1 ; i < Server.board.getRows() - 1 ; i++) {
+                        int index = bomb.getX() * Server.board.getRows() + i;
+                        Server.board.setElement(index, null);
+                    }
+
                     Server.sendAll("burst_bomb", bomb_position);
+                    thread.nb_bombs--;
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         }).start();
-
-        this.nb_bombs--;
     }
 }

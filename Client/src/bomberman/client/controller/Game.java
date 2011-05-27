@@ -1,9 +1,11 @@
 package bomberman.client.controller;
 
 import bomberman.client.elements.Player;
+import bomberman.client.elements.Wall;
 import bomberman.client.gui.Board;
 import bomberman.client.gui.Window;
 import bomberman.client.model.Client;
+import com.sun.corba.se.spi.activation.Server;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashMap;
@@ -133,6 +135,18 @@ public class Game extends Thread implements KeyListener {
     public void delPlayer(int player_id) {
         if (this.players.containsKey(player_id)) {
             this.players.remove(player_id);
+        }
+    }
+
+    public void burstBomb(int x, int y) {
+        for(int i = 1 ; i < this.getBoard().getCols() - 1 ; i++) {
+            int index = i * this.getBoard().getRows() + y;
+            this.getBoard().setElement(index, null);
+        }
+
+        for(int i = 1 ; i < this.getBoard().getRows() - 1 ; i++) {
+            int index = x * this.getBoard().getRows() + i;
+            this.getBoard().setElement(index, null);
         }
     }
 

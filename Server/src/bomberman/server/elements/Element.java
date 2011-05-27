@@ -13,6 +13,8 @@ public abstract class Element {
 
         if (element instanceof Wall) {
             data.put("type", "wall");
+        } else if (element instanceof Bomb) {
+            data.put("type", "bomb");
         }
 
         if (data.isEmpty()) {
