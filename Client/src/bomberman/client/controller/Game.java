@@ -148,20 +148,55 @@ public class Game extends Thread implements KeyListener {
     public void burstBomb(int x, int y) {
         List<Integer> fire = new ArrayList();
 
-        for (int i = 0; i < this.board.getCols(); i++) {
-            int index = i + this.board.getCols() * y;
+        int index = x + this.board.getCols() * y;
+        this.board.setElement(index, null);
+        fire.add(index);
+
+        for (int i = x + 1; i < this.board.getCols(); i++) {
+            index = i + this.board.getCols() * y;
             Element element = this.board.getElements().get(index);
-            if (element != null && element.isBreakable()) {
-                this.board.setElement(index, null);
+            if (element != null) {
+                if (element.isBreakable()) {
+                    this.board.setElement(index, null);
+                    fire.add(index);
+                }
+                break;
             }
             fire.add(index);
         }
-
-        for (int i = 0; i < this.board.getRows(); i++) {
-            int index = x + this.board.getCols() * i;
+        for (int i = x - 1; i >= 0; i--) {
+            index = i + this.board.getCols() * y;
             Element element = this.board.getElements().get(index);
-            if (element != null && element.isBreakable()) {
-                this.board.setElement(index, null);
+            if (element != null) {
+                if (element.isBreakable()) {
+                    this.board.setElement(index, null);
+                    fire.add(index);
+                }
+                break;
+            }
+            fire.add(index);
+        }
+        for (int i = y + 1; i < this.board.getRows(); i++) {
+            index = x + this.board.getCols() * i;
+            Element element = this.board.getElements().get(index);
+            if (element != null) {
+                if (element.isBreakable()) {
+                    this.board.setElement(index, null);
+                    fire.add(index);
+                }
+                break;
+            }
+            fire.add(index);
+        }
+        for (int i = y - 1; i >= 0; i--) {
+            index = x + this.board.getCols() * i;
+            Element element = this.board.getElements().get(index);
+            if (element != null) {
+                if (element.isBreakable()) {
+                    this.board.setElement(index, null);
+                    fire.add(index);
+                }
+                break;
             }
             fire.add(index);
         }

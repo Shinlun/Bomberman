@@ -252,18 +252,23 @@ public class ServerThread extends Thread {
 
                     HashMap<Integer, ServerThread> players_threads = Server.getPlayersThreads();
 
-                    for (int i = 1; i < Server.board.getCols() - 1; i++) {
-                        int index = i + Server.board.getCols() * bomb.getY();
+                    int index = bomb.getX() + Server.board.getCols() * bomb.getY();
+                    Server.board.setElement(index, null);
+                    for (ServerThread thread : players_threads.values()) {
+                        if (thread.getPostionX() == bomb.getX() && thread.getPositionY() == bomb.getY()) {
+                            Server.killPlayer(thread.getClientId());
+                        }
+                    }
+
+                    for (int i = bomb.getX() + 1; i < Server.board.getCols(); i++) {
+                        index = i + Server.board.getCols() * bomb.getY();
                         Element element = Server.board.getElements().get(index);
                         if (element != null) {
-                            if (element instanceof Bomb) {
-                                Server.board.setElement(index, null);
-                            } else {
+                            if (element.isBreakable()) {
                                 element.setActive(false);
-                                if (element instanceof Wall) {
-                                    resetElement(i, bomb.getY());
-                                }
+                                resetElement(i, bomb.getY());
                             }
+                            break;
                         }
                         for (ServerThread thread : players_threads.values()) {
                             if (thread.getPostionX() == i && thread.getPositionY() == bomb.getY()) {
@@ -271,18 +276,47 @@ public class ServerThread extends Thread {
                             }
                         }
                     }
-                    for (int i = 1; i < Server.board.getRows() - 1; i++) {
-                        int index = bomb.getX() + Server.board.getCols() * i;
+                    for (int i = bomb.getX() - 1; i >= 0; i--) {
+                        index = i + Server.board.getCols() * bomb.getY();
                         Element element = Server.board.getElements().get(index);
                         if (element != null) {
-                            if (element instanceof Bomb) {
-                                Server.board.setElement(index, null);
-                            } else {
+                            if (element.isBreakable()) {
                                 element.setActive(false);
-                                if (element instanceof Wall) {
-                                    resetElement(bomb.getX(), i);
-                                }
+                                resetElement(i, bomb.getY());
                             }
+                            break;
+                        }
+                        for (ServerThread thread : players_threads.values()) {
+                            if (thread.getPostionX() == i && thread.getPositionY() == bomb.getY()) {
+                                Server.killPlayer(thread.getClientId());
+                            }
+                        }
+                    }
+                    for (int i = bomb.getY() + 1; i < Server.board.getRows(); i++) {
+                        index = bomb.getX() + Server.board.getCols() * i;
+                        Element element = Server.board.getElements().get(index);
+                        if (element != null) {
+                            if (element.isBreakable()) {
+                                element.setActive(false);
+                                resetElement(bomb.getX(), i);
+                            }
+                            break;
+                        }
+                        for (ServerThread thread : players_threads.values()) {
+                            if (thread.getPostionX() == bomb.getX() && thread.getPositionY() == i) {
+                                Server.killPlayer(thread.getClientId());
+                            }
+                        }
+                    }
+                    for (int i = bomb.getY() - 1; i >= 0; i--) {
+                        index = bomb.getX() + Server.board.getCols() * i;
+                        Element element = Server.board.getElements().get(index);
+                        if (element != null) {
+                            if (element.isBreakable()) {
+                                element.setActive(false);
+                                resetElement(bomb.getX(), i);
+                            }
+                            break;
                         }
                         for (ServerThread thread : players_threads.values()) {
                             if (thread.getPostionX() == bomb.getX() && thread.getPositionY() == i) {
@@ -310,7 +344,6 @@ public class ServerThread extends Thread {
                     if (element != null && !element.isActive()) {
                         Thread.sleep(element.getRebirthDelay());
                         Map<Integer, Integer> positions = Server.getPlayersPositions();
-                        System.out.println(positions);
                         if (!(positions.containsKey(x) && positions.get(x) == y)) {
                             element.setActive(true);
                             List element_to_add = new ArrayList();
