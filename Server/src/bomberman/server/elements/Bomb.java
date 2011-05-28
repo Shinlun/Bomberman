@@ -118,7 +118,7 @@ public class Bomb extends Element {
         this.fire.add(index);
 
         for (ServerThread thread : players_threads.values()) {
-            if (thread.getPostionX() == i && thread.getPositionY() == this.y) {
+            if (thread.getPostionX() == i && thread.getPositionY() == j) {
                 Server.killPlayer(thread.getClientId());
             }
         }
