@@ -78,7 +78,7 @@ public class Game extends Thread implements KeyListener {
                     player.progressMove(period);
                 }
 
-                this.board.repaint();
+                this.board.repaint(period);
 
                 Thread.sleep(period);
             } catch (InterruptedException e) {
