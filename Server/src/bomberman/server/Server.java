@@ -71,7 +71,7 @@ public class Server {
     public static List<Integer> getPlayersPositions() {
         List<Integer> positions = new ArrayList<Integer>();
         for (ServerThread player_thread : players_threads.values()) {
-            positions.add(player_thread.getPostionX() + board.getCols() * player_thread.getPositionY());
+            positions.add(player_thread.getBoardIndex());
         }
         return positions;
     }
@@ -85,8 +85,7 @@ public class Server {
         ArrayList<Integer> position = new ArrayList<Integer>();
         players_threads.get(client_id).setRandomPosition();
         position.add(client_id);
-        position.add(players_threads.get(client_id).getPostionX());
-        position.add(players_threads.get(client_id).getPositionY());
+        position.add(players_threads.get(client_id).getBoardIndex());
         sendAll("reposition", position);
     }
 }

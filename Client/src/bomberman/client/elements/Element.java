@@ -1,10 +1,12 @@
 package bomberman.client.elements;
 
+import bomberman.client.model.Client;
 import java.awt.Image;
 import java.util.Map;
 
 public abstract class Element {
 
+    private int index;
     protected Image image;
     protected boolean breakable = true;
     protected boolean walkable = false;
@@ -23,18 +25,33 @@ public abstract class Element {
             element = new Bonus();
         }
 
+        if (element == null) {
+            throw new Exception("Unknown Element");
+        }
+
+        element.setIndex(Client.convertToInt(data.get("index")));
         if (data.containsKey("breakable")) {
             element.setBreakable((Boolean) data.get("breakable"));
         }
         if (data.containsKey("walkable")) {
             element.setWalkable((Boolean) data.get("walkable"));
         }
-
-        if (element == null) {
-            throw new Exception("Unknown Element");
-        }
         return element;
 
+    }
+
+    /**
+     * @return the index
+     */
+    public int getIndex() {
+        return index;
+    }
+
+    /**
+     * @param index the index to set
+     */
+    public void setIndex(int index) {
+        this.index = index;
     }
 
     public Image getImage() {

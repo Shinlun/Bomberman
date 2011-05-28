@@ -13,13 +13,11 @@ public class Player {
     /**
      * Target position of the player
      */
-    private int x;
-    private int y;
+    private int index;
     /**
      * Old position of the player
      */
-    private int old_x;
-    private int old_y;
+    private int old_index;
     /**
      * Progression of the position change. 0 to 1
      */
@@ -33,13 +31,12 @@ public class Player {
         this.image = Window.getInstance().getToolkit().getImage("images/player.png");
     }
 
-    public static Player factory(Map<String, Object> data) throws Exception{
-        int id = Client.getInstance().convertToInt(data.get("id"));
+    public static Player factory(Map<String, Object> data) throws Exception {
+        int id = Client.convertToInt(data.get("id"));
         Player player = new Player();
         player.setId(id);
-        player.setX(Client.getInstance().convertToInt(data.get("x")));
-        player.setY(Client.getInstance().convertToInt(data.get("y")));
-        player.setVelocity(Client.getInstance().convertToDouble(data.get("velocity")));
+        player.setIndex(Client.convertToInt(data.get("index")));
+        player.setVelocity(Client.convertToDouble(data.get("velocity")));
         if (data.containsKey("client") && (Boolean) data.get("client")) {
             Game.getInstance().setCurrentPlayerId(id);
         }
@@ -73,85 +70,53 @@ public class Player {
         }
     }
 
-    public void startMoveRelative(int diff_x, int diff_y) {
-        this.old_x = this.x;
-        this.old_y = this.y;
-        this.x += diff_x;
-        this.y += diff_y;
-        this.move_progression = 0;
-        Client.getInstance().movePlayer(diff_x, diff_y);
-    }
-
-    public void startMove(int x, int y) {
-        this.old_x = this.x;
-        this.old_y = this.y;
-        this.x = x;
-        this.y = y;
+    public void startMove(int index) {
+        this.old_index = this.index;
+        this.index = index;
         this.move_progression = 0;
     }
 
-    public void reposition(int x, int y) {
-        this.x = x;
-        this.y = y;
-        this.old_x = x;
-        this.old_y = y;
+    public void startMove(int index, boolean send) {
+        this.old_index = this.index;
+        this.index = index;
+        this.move_progression = 0;
+        if (send) {
+            Client.getInstance().movePlayer(index);
+        }
+    }
+
+    public void reposition(int index) {
+        this.index = index;
+        this.old_index = index;
         this.move_progression = 1;
     }
 
     /**
-     * @return the x
+     * @return the index
      */
-    public int getX() {
-        return x;
+    public int getIndex() {
+        return index;
     }
 
     /**
-     * @param x the x to set
+     * @param index the index to set
      */
-    public void setX(int x) {
-        this.x = x;
+    public void setIndex(int index) {
+        this.index = index;
     }
 
     /**
-     * @return the y
+     * @return the old_index
      */
-    public int getY() {
-        return y;
+    public int getOldIndex() {
+        return old_index;
     }
 
     /**
-     * @param y the y to set
+     * @param old_index the old_index to set
      */
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    /**
-     * @return the old_x
-     */
-    public int getOldX() {
-        return old_x;
-    }
-
-    /**
-     * @param old_x the old_x to set
-     */
-    public void setOldX(int old_x) {
-        this.old_x = old_x;
-    }
-
-    /**
-     * @return the old_y
-     */
-    public int getOldY() {
-        return old_y;
-    }
-
-    /**
-     * @param old_y the old_y to set
-     */
-    public void setOldY(int old_y) {
-        this.old_y = old_y;
+    public void setOldIndex(int old_index) {
+        this.old_index = old_index;
     }
 
     /**

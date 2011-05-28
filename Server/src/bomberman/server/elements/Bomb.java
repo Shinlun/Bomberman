@@ -8,7 +8,7 @@ import java.util.List;
 
 public class Bomb extends Element {
 
-    private int sleeping_time = 4000;
+    private int sleeping_time = 2000;
     private int client_id;
     private boolean burst_ok = false;
     private List<Element> burning_list = new ArrayList<Element>();
@@ -29,11 +29,7 @@ public class Bomb extends Element {
     @Override
     public void burn() {
         this.burst();
-
-        List element_to_del = new ArrayList();
-        element_to_del.add(x);
-        element_to_del.add(y);
-        Server.sendAll("del_element", element_to_del);
+        Server.sendAll("del_element", this.index);
     }
 
     public void delayBurst() {
@@ -58,32 +54,31 @@ public class Bomb extends Element {
 
         HashMap<Integer, ServerThread> players_threads = Server.getPlayersThreads();
 
-        int index = this.x + Server.board.getCols() * this.y;
-        Server.board.setElement(index, null);
-        this.fire.add(index);
+        Server.board.delElement(this.index);
+        this.fire.add(this.index);
         for (ServerThread thread : players_threads.values()) {
-            if (thread.getPostionX() == this.x && thread.getPositionY() == this.y) {
+            if (thread.getBoardIndex() == this.index) {
                 Server.killPlayer(thread.getClientId());
             }
         }
 
-        for (int i = this.x + 1; i < Server.board.getCols(); i++) {
-            if (!this.checkSquare(i, this.y)) {
+        for (int i = this.index + 1; i % Server.board.getCols() != 0; i++) {
+            if (!this.checkSquare(i)) {
                 break;
             }
         }
-        for (int i = this.x - 1; i >= 0; i--) {
-            if (!this.checkSquare(i, this.y)) {
+        for (int i = this.index - 1; (i + 1) % Server.board.getCols() != 0; i--) {
+            if (!this.checkSquare(i)) {
                 break;
             }
         }
-        for (int i = this.y + 1; i < Server.board.getRows(); i++) {
-            if (!this.checkSquare(this.x, i)) {
+        for (int i = this.index + Server.board.getCols(); i < Server.board.getSize(); i += Server.board.getCols()) {
+            if (!this.checkSquare(i)) {
                 break;
             }
         }
-        for (int i = this.y - 1; i >= 0; i--) {
-            if (!this.checkSquare(this.x, i)) {
+        for (int i = this.index - Server.board.getCols(); i >= 0; i -= Server.board.getCols()) {
+            if (!this.checkSquare(i)) {
                 break;
             }
         }
@@ -98,12 +93,11 @@ public class Bomb extends Element {
         Server.getPlayersThreads().get(this.client_id).decreaseNbBombs();
     }
 
-    private boolean checkSquare(int i, int j) {
+    private boolean checkSquare(int check_index) {
         HashMap<Integer, ServerThread> players_threads = Server.getPlayersThreads();
-        int index = i + Server.board.getCols() * j;
 
-        Element element = Server.board.getElements().get(index);
-        if (element != null) {
+        Element element = Server.board.getElement(check_index);
+        if (element != null && element.isActive()) {
             if (!element.isBreakable()) {
                 return false;
             }
@@ -111,14 +105,14 @@ public class Bomb extends Element {
                 element.burn();
             } else {
                 this.burning_list.add(element);
-                this.fire.add(index);
+                this.fire.add(check_index);
                 return false;
             }
         }
-        this.fire.add(index);
+        this.fire.add(check_index);
 
         for (ServerThread thread : players_threads.values()) {
-            if (thread.getPostionX() == i && thread.getPositionY() == j) {
+            if (thread.getBoardIndex() == check_index) {
                 Server.killPlayer(thread.getClientId());
             }
         }

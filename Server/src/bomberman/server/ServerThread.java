@@ -22,14 +22,13 @@ public class ServerThread extends Thread {
     private int client_id;
     private boolean initialized = false;
     private int nb_bombs = 0;
-    private int bombs_allowed = 10;
-    private int bomb_sleeping_time = 4000;
+    private int bombs_allowed = 1;
+    private int bomb_sleeping_time = 2000;
     private boolean moving = false;
     /**
      * Position of the player
      */
-    private int position_x = 0;
-    private int position_y = 0;
+    private int board_index = 0;
     /**
      * Squares per second
      */
@@ -45,14 +44,6 @@ public class ServerThread extends Thread {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-    }
-
-    public int getPostionX() {
-        return this.position_x;
-    }
-
-    public int getPositionY() {
-        return this.position_y;
     }
 
     public int getClientId() {
@@ -99,11 +90,7 @@ public class ServerThread extends Thread {
         System.out.println(command + " " + obj);
         try {
             if (command.equals("move")) {
-                if (obj instanceof ArrayList && ((List) obj).size() == 2) {
-                    int diff_x = this.convertToInt(((List) obj).get(0));
-                    int diff_y = this.convertToInt(((List) obj).get(1));
-                    this.move(diff_x, diff_y);
-                }
+                this.move(convertToInt(obj));
 
             } else if (command.equals("drop_bomb")) {
                 if (this.nb_bombs < this.bombs_allowed) {
@@ -133,13 +120,17 @@ public class ServerThread extends Thread {
         return JSONValue.parse(data);
     }
 
-    private int convertToInt(Object n) throws Exception {
+    private static int convertToInt(Object n) throws Exception {
         if (n instanceof Integer) {
             return (Integer) n;
         } else if (n instanceof Long) {
             return ((Long) n).intValue();
         }
         throw new Exception(n + " not an Integer");
+    }
+
+    public int getBoardIndex() {
+        return this.board_index;
     }
 
     private void sendBoardCols() {
@@ -152,21 +143,18 @@ public class ServerThread extends Thread {
 
     public void setRandomPosition() {
         double nb_cases = Server.board.getCols() * Server.board.getRows();
-        int i, x, y;
+        int i;
         List<Integer> players_positions = Server.getPlayersPositions();
 
         Element element;
         do {
             i = (int) Math.round(Math.random() * nb_cases);
-            x = i % Server.board.getCols();
-            y = (int) Math.ceil(i / Server.board.getCols());
-            element = Server.board.getElements().get(i);
+            element = Server.board.getElement(i);
         } while ((element != null && !element.isWalkable())
                 || players_positions.contains(i)
-                || Server.board.isSquareOnFire(x, y));
+                || Server.board.isSquareOnFire(i));
 
-        this.position_x = x;
-        this.position_y = y;
+        this.board_index = i;
     }
 
     private void sendPlayersList() {
@@ -180,8 +168,7 @@ public class ServerThread extends Thread {
     public Map<String, Object> exportPlayerData() {
         Map<String, Object> player_data = new HashMap<String, Object>();
         player_data.put("id", this.client_id);
-        player_data.put("x", this.position_x);
-        player_data.put("y", this.position_y);
+        player_data.put("index", this.board_index);
         player_data.put("velocity", this.velocity);
         return player_data;
     }
@@ -190,23 +177,20 @@ public class ServerThread extends Thread {
         return this.initialized;
     }
 
-    private void move(final int diff_x, final int diff_y) {
+    private void move(final int target_index) {
         boolean moving_allowed = true;
 
         if (this.moving) {
             moving_allowed = false;
 
-        } else if (Math.abs(diff_x) + Math.abs(diff_y) != 1) {
+        } else if (target_index < 0 || target_index >= Server.board.getSize()) {
             moving_allowed = false;
 
-        } else {
-            int target_x = this.position_x + diff_x;
-            int target_y = this.position_y + diff_y;
-            int target_index = target_x + Server.board.getCols() * target_y;
-            Element target_element = Server.board.getElements().get(target_index);
-            if (target_element != null && target_element.isActive() && !target_element.isWalkable()) {
-                moving_allowed = false;
-            }
+        } else if (Math.abs(board_index - target_index) != 1 && Math.abs(board_index - target_index) != Server.board.getCols()) {
+            moving_allowed = false;
+
+        } else if(!Server.board.isSquareWalkable(target_index)) {
+            moving_allowed = false;
         }
 
         if (moving_allowed) {
@@ -214,8 +198,7 @@ public class ServerThread extends Thread {
 
             ArrayList<Integer> move = new ArrayList<Integer>();
             move.add(this.client_id);
-            move.add(this.position_x + diff_x);
-            move.add(this.position_y + diff_y);
+            move.add(target_index);
             Server.sendAllBut("move", move, this.client_id);
 
             new Thread(new Runnable() {
@@ -224,9 +207,9 @@ public class ServerThread extends Thread {
                     int move_duration = (int) (1000 / velocity);
                     try {
                         Thread.sleep(move_duration / 2);
-                        position_x += diff_x;
-                        position_y += diff_y;
-                        if (Server.board.isSquareOnFire(position_x, position_y)) {
+                        
+                        board_index = target_index;
+                        if (Server.board.isSquareOnFire(board_index)) {
                             Server.killPlayer(client_id);
                         }
 
@@ -242,28 +225,21 @@ public class ServerThread extends Thread {
         } else {
             ArrayList<Integer> position = new ArrayList<Integer>();
             position.add(this.client_id);
-            position.add(this.position_x);
-            position.add(this.position_y);
+            position.add(this.board_index);
             this.send("reposition", position);
         }
     }
 
-    private void dropBomb() {
+    private void dropBomb() throws Exception {
         this.nb_bombs++;
         Bomb bomb = new Bomb();
-        bomb.setX(this.position_x);
-        bomb.setY(this.position_y);
+        bomb.setIndex(board_index);
         bomb.setSleepingTime(this.bomb_sleeping_time);
         bomb.setClientId(this.client_id);
         bomb.delayBurst();
 
-        int target_index = bomb.getX() + Server.board.getCols() * bomb.getY();
-        Server.board.setElement(target_index, bomb);
-
-        ArrayList<Integer> bomb_position = new ArrayList<Integer>();
-        bomb_position.add(bomb.getX());
-        bomb_position.add(bomb.getY());
-        Server.sendAll("drop_bomb", bomb_position);
+        Server.board.setElement(bomb);
+        Server.sendAll("add_element", Element.export(bomb));
     }
 
     public void decreaseNbBombs() {

@@ -1,19 +1,17 @@
 package bomberman.server.elements;
 
 import bomberman.server.Server;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public abstract class Element {
 
-    protected int x;
-    protected int y;
+    protected int index;
     protected boolean active = true;
     protected boolean breakable = true;
     protected boolean walkable = false;
-    private int rebirth_delay = 10000;
+    private int rebirth_delay = 20000;
 
     public static Map export(Element element) throws Exception {
         if (element == null || !element.active) {
@@ -26,30 +24,25 @@ public abstract class Element {
         } else if (element instanceof Bomb) {
             data.put("type", "bomb");
         }
-        data.put("breakable", element.isBreakable());
-        data.put("walkable", element.isWalkable());
 
         if (data.isEmpty()) {
             throw new Exception("Unknown Element");
         }
+
+        data.put("index", element.getIndex());
+        data.put("breakable", element.isBreakable());
+        data.put("walkable", element.isWalkable());
+
         return data;
 
     }
 
-    public void setX(int x) {
-        this.x = x;
+    public void setIndex(int index) {
+        this.index = index;
     }
 
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public int getX() {
-        return this.x;
-    }
-
-    public int getY() {
-        return this.y;
+    public int getIndex() {
+        return this.index;
     }
 
     public void setBreakable(boolean breakable) {
@@ -76,11 +69,7 @@ public abstract class Element {
         if (this.active) {
             this.setActive(false);
             this.delayRebirth();
-
-            List element_to_del = new ArrayList();
-            element_to_del.add(x);
-            element_to_del.add(y);
-            Server.sendAll("del_element", element_to_del);
+            Server.sendAll("del_element", this.index);
         }
     }
 
@@ -102,21 +91,16 @@ public abstract class Element {
                         Thread.sleep(rebirth_delay);
                         List<Integer> positions = Server.getPlayersPositions();
 
-                        int index = x + Server.board.getCols() * y;
-                        Element board_element = Server.board.getElements().get(index);
+                        Element board_element = Server.board.getElement(index);
 
-                        if (!positions.contains(x + Server.board.getCols() * y)
-                                && !Server.board.isSquareOnFire(x, y)
+                        if (!positions.contains(index)
+                                && !Server.board.isSquareOnFire(index)
                                 && (element.equals(board_element) || board_element == null)) {
                             if (board_element == null) {
-                                Server.board.getElements().set(index, element);
+                                Server.board.setElement(element);
                             }
                             setActive(true);
-                            List element_to_add = new ArrayList();
-                            element_to_add.add(Element.export(element));
-                            element_to_add.add(x);
-                            element_to_add.add(y);
-                            Server.sendAll("add_element", element_to_add);
+                            Server.sendAll("add_element", Element.export(element));
                         } else {
                             element.delayRebirth();
                         }

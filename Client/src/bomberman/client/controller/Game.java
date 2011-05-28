@@ -1,7 +1,5 @@
 package bomberman.client.controller;
 
-import bomberman.client.elements.Bomb;
-import bomberman.client.elements.Element;
 import bomberman.client.elements.Player;
 import bomberman.client.gui.Board;
 import bomberman.client.gui.Window;
@@ -62,14 +60,18 @@ public class Game extends Thread implements KeyListener {
                 {
                     Player player = this.getCurrentPlayer();
                     if (player.getMovePogression() == 1) {
-                        if (this.key_up && this.board.isSquareWalkable(player.getX(), player.getY() - 1)) {
-                            player.startMoveRelative(0, -1);
-                        } else if (this.key_down && this.board.isSquareWalkable(player.getX(), player.getY() + 1)) {
-                            player.startMoveRelative(0, 1);
-                        } else if (this.key_left && this.board.isSquareWalkable(player.getX() - 1, player.getY())) {
-                            player.startMoveRelative(-1, 0);
-                        } else if (this.key_right && this.board.isSquareWalkable(player.getX() + 1, player.getY())) {
-                            player.startMoveRelative(1, 0);
+                        int up_target = player.getIndex() - this.board.getCols();
+                        int down_target = player.getIndex() + this.board.getCols();
+                        int left_target = player.getIndex() + 1;
+                        int right_target = player.getIndex() - 1;
+                        if (this.key_up && this.board.isSquareWalkable(up_target)) {
+                            player.startMove(up_target, true);
+                        } else if (this.key_down && this.board.isSquareWalkable(down_target)) {
+                            player.startMove(down_target, true);
+                        } else if (this.key_left && this.board.isSquareWalkable(left_target)) {
+                            player.startMove(left_target, true);
+                        } else if (this.key_right && this.board.isSquareWalkable(right_target)) {
+                            player.startMove(right_target, true);
                         }
                     }
                 }
@@ -133,21 +135,6 @@ public class Game extends Thread implements KeyListener {
         if (this.players.containsKey(player_id)) {
             this.players.remove(player_id);
         }
-    }
-
-    public void dropBomb(int x, int y) {
-        int target_index = x + this.board.getCols() * y;
-        Game.getInstance().getBoard().setElement(target_index, new Bomb());
-    }
-
-    public void addElement(Element element, int x, int y) {
-        int index = x + this.board.getCols() * y;
-        Game.getInstance().getBoard().setElement(index, element);
-    }
-
-    public void delElement(int x, int y) {
-        int index = x + this.board.getCols() * y;
-        Game.getInstance().getBoard().setElement(index, null);
     }
 
     public void keyTyped(KeyEvent e) {

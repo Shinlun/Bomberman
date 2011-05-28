@@ -34,8 +34,7 @@ public class Board {
             }
 
             if (element != null) {
-                element.setX(i % this.cols);
-                element.setY((int) Math.ceil(i / this.rows));
+                element.setIndex(i);
             }
 
             this.elements.add(element);
@@ -64,12 +63,35 @@ public class Board {
         return this.rows;
     }
 
+    public int getSize() {
+        return this.cols * this.rows;
+    }
+
     public List<Element> getElements() {
         return elements;
     }
 
-    public void setElement(int index, Element element) {
-        this.elements.set(index, element);
+    public Element getElement(int index) {
+        return elements.get(index);
+    }
+
+    public void setElement(Element element) {
+        this.elements.set(element.getIndex(), element);
+    }
+
+    public void delElement(int index) {
+        this.elements.set(index, null);
+    }
+
+    public boolean isSquareWalkable(int index) {
+        if (index < 0 || index > this.cols * this.rows) {
+            return false;
+        }
+        Element element = this.elements.get(index);
+        if (element == null) {
+            return true;
+        }
+        return !element.isActive() || element.isWalkable();
     }
 
     public void addFire(final List<Integer> add_fire) {
@@ -93,7 +115,7 @@ public class Board {
         }).start();
     }
 
-    public boolean isSquareOnFire(int x, int y) {
-        return this.fire.contains(x + this.cols * y);
+    public boolean isSquareOnFire(int index) {
+        return this.fire.contains(index);
     }
 }

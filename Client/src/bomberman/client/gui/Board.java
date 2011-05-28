@@ -37,48 +37,41 @@ public class Board extends JPanel {
         }
         Collection<Player> players = Game.getInstance().getPlayers().values();
 
-        for (int i = this.cols - 1; i >= 0; i--) {
-            for (int j = this.rows - 1; j >= 0; j--) {
-                int x = this.getPosX(i, j);
-                int y = this.getPosY(i, j);
-                g.drawImage(this.sprite_floor, x, y, this);
-            }
+        int size = this.cols * this.rows;
+        for (int index = 0; index < size; index++) {
+            int x = this.getPosX(index);
+            int y = this.getPosY(index);
+            g.drawImage(this.sprite_floor, x, y, this);
         }
 
-        for (int j = 0; j < this.rows; j++) {
-            for (int i = this.cols - 1; i >= 0; i--) {
-                try {
-                    int index = j * this.cols + i;
-                    int x = this.getPosX(i, j);
-                    int y = this.getPosY(i, j);
+        for (int index = 0; index < size; index++) {
+            int x = this.getPosX(index);
+            int y = this.getPosY(index);
 
-                    Element element = this.getElements().get(index);
-                    if (element != null) {
-                        g.drawImage(element.getImage(), x, y, this);
-                    }
+            Element element = this.getElements().get(index);
+            if (element != null) {
+                g.drawImage(element.getImage(), x, y, this);
+            }
 
-                    if (this.fire.contains(index)) {
-                        g.drawImage(this.fire_image, x, y, this);
-                    }
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                }
+            if (this.fire.contains(index)) {
+                g.drawImage(this.fire_image, x, y, this);
             }
 
             for (Player player : players) {
-                if (player.getY() == j) {
-                    int x = this.getPosX(player.getX(), player.getY());
-                    int y = this.getPosY(player.getX(), player.getY());
-                    if (player.getMovePogression() != 1) {
-                        int old_x = this.getPosX(player.getOldX(), player.getOldY());
-                        int old_y = this.getPosY(player.getOldX(), player.getOldY());
-                        x = (old_x + (int) ((x - old_x) * player.getMovePogression()));
-                        y = (old_y + (int) ((y - old_y) * player.getMovePogression()));
+                if (player.getIndex() == index) {
+                    if (player.getMovePogression() == 1) {
+                        g.drawImage(player.getImage(), x, y, this);
+                    } else {
+                        int old_x = this.getPosX(player.getOldIndex());
+                        int old_y = this.getPosY(player.getOldIndex());
+                        int current_x = (old_x + (int) ((x - old_x) * player.getMovePogression()));
+                        int current_y = (old_y + (int) ((y - old_y) * player.getMovePogression()));
+                        g.drawImage(player.getImage(), current_x, current_y, this);
                     }
-                    g.drawImage(player.getImage(), x, y, this);
                 }
             }
         }
+
     }
 
     public void setData(List<Map> data) {
@@ -108,8 +101,12 @@ public class Board extends JPanel {
         return elements;
     }
 
-    public void setElement(int index, Element element) {
-        this.elements.set(index, element);
+    public void setElement(Element element) {
+        this.elements.set(element.getIndex(), element);
+    }
+
+    public void delElement(int index) {
+        this.elements.set(index, null);
     }
 
     public void setCols(int cols) {
@@ -124,16 +121,23 @@ public class Board extends JPanel {
         return this.cols;
     }
 
-    private int getPosX(int i, int j) {
+    private int getPosX(int index) {
+        int i = this.cols - 1 - (index % this.cols);
+        int j = (int) Math.floor(index / this.cols);
         return (3 * i + j) * this.unit_pixels;
     }
 
-    private int getPosY(int i, int j) {
+    private int getPosY(int index) {
+        int i = this.cols - 1 - (index % this.cols);
+        int j = (int) Math.floor(index / this.cols);
         return (2 * j - i + this.cols) * this.unit_pixels;
     }
 
-    public boolean isSquareWalkable(int i, int j) {
-        Element element = this.getElements().get(j * this.cols + i);
+    public boolean isSquareWalkable(int index) {
+        if (index < 0 || index > this.cols * this.rows) {
+            return false;
+        }
+        Element element = this.elements.get(index);
         if (element == null) {
             return true;
         }

@@ -75,7 +75,7 @@ public class Client extends Thread {
         System.out.println(command + " " + obj);
         try {
             if (command.equals("board_cols")) {
-                Game.getInstance().getBoard().setCols(this.convertToInt(obj));
+                Game.getInstance().getBoard().setCols(convertToInt(obj));
 
             } else if (command.equals("board")) {
                 Game.getInstance().getBoard().setData((List<Map>) obj);
@@ -87,42 +87,30 @@ public class Client extends Thread {
                 Game.getInstance().addPlayer((Map<String, Object>) obj);
 
             } else if (command.equals("del_player")) {
-                Game.getInstance().delPlayer(this.convertToInt(obj));
+                Game.getInstance().delPlayer(convertToInt(obj));
 
             } else if (command.equals("reposition")) {
-                int player_id = this.convertToInt(((List) obj).get(0));
-                int x = this.convertToInt(((List) obj).get(1));
-                int y = this.convertToInt(((List) obj).get(2));
-                Game.getInstance().getPlayer(player_id).reposition(x, y);
+                int player_id = convertToInt(((List) obj).get(0));
+                int index = convertToInt(((List) obj).get(1));
+                Game.getInstance().getPlayer(player_id).reposition(index);
 
             } else if (command.equals("move")) {
-                int player_id = this.convertToInt(((List) obj).get(0));
-                int x = this.convertToInt(((List) obj).get(1));
-                int y = this.convertToInt(((List) obj).get(2));
-                Game.getInstance().getPlayer(player_id).startMove(x, y);
-
-            } else if (command.equals("drop_bomb")) {
-                int x = this.convertToInt(((List) obj).get(0));
-                int y = this.convertToInt(((List) obj).get(1));
-                Game.getInstance().dropBomb(x, y);
+                int player_id = convertToInt(((List) obj).get(0));
+                int index = convertToInt(((List) obj).get(1));
+                Game.getInstance().getPlayer(player_id).startMove(index);
 
             } else if (command.equals("burst_bomb")) {
                 ArrayList<Integer> fire = new ArrayList<Integer>();
                 for (Object i : (List) obj) {
-                    fire.add(this.convertToInt(i));
+                    fire.add(convertToInt(i));
                 }
                 Game.getInstance().getBoard().addFire(fire);
 
             } else if (command.equals("add_element")) {
-                Element element = Element.factory((Map) ((List) obj).get(0));
-                int x = this.convertToInt(((List) obj).get(1));
-                int y = this.convertToInt(((List) obj).get(2));
-                Game.getInstance().addElement(element, x, y);
+                Game.getInstance().getBoard().setElement(Element.factory((Map) obj));
 
             } else if (command.equals("del_element")) {
-                int x = this.convertToInt(((List) obj).get(0));
-                int y = this.convertToInt(((List) obj).get(1));
-                Game.getInstance().delElement(x, y);
+                Game.getInstance().getBoard().delElement(convertToInt(obj));
             }
 
         } catch (Exception e) {
@@ -148,7 +136,7 @@ public class Client extends Thread {
         return JSONValue.parse(data);
     }
 
-    public int convertToInt(Object n) throws Exception {
+    public static int convertToInt(Object n) throws Exception {
         if (n instanceof Integer) {
             return (Integer) n;
         } else if (n instanceof Long) {
@@ -157,7 +145,7 @@ public class Client extends Thread {
         throw new Exception(n + " not an Integer");
     }
 
-    public double convertToDouble(Object n) throws Exception {
+    public static double convertToDouble(Object n) throws Exception {
         if (n instanceof Double) {
             return (Double) n;
         } else if (n instanceof Long) {
@@ -168,11 +156,8 @@ public class Client extends Thread {
         throw new Exception(n + " not an Double");
     }
 
-    public void movePlayer(int diff_x, int diff_y) {
-        List<Integer> obj = new ArrayList();
-        obj.add(diff_x);
-        obj.add(diff_y);
-        this.send("move", obj);
+    public void movePlayer(int index) {
+        this.send("move", index);
     }
 
     public void dropBomb() {
