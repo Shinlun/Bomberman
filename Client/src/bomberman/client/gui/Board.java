@@ -37,14 +37,20 @@ public class Board extends JPanel {
         }
         Collection<Player> players = Game.getInstance().getPlayers().values();
 
+        for (int i = this.cols - 1; i >= 0; i--) {
+            for (int j = this.rows - 1; j >= 0; j--) {
+                int x = this.getPosX(i, j);
+                int y = this.getPosY(i, j);
+                g.drawImage(this.sprite_floor, x, y, this);
+            }
+        }
+
         for (int j = 0; j < this.rows; j++) {
             for (int i = this.cols - 1; i >= 0; i--) {
                 try {
                     int index = j * this.cols + i;
-                    int x = this.getPosX(i, j) * this.unit_pixels;
-                    int y = this.getPosY(i, j) * this.unit_pixels;
-
-                    g.drawImage(this.sprite_floor, x, y, this);
+                    int x = this.getPosX(i, j);
+                    int y = this.getPosY(i, j);
 
                     Element element = this.getElements().get(index);
                     if (element != null) {
@@ -61,11 +67,11 @@ public class Board extends JPanel {
 
             for (Player player : players) {
                 if (player.getY() == j) {
-                    int x = this.getPosX(player.getX(), player.getY()) * this.unit_pixels;
-                    int y = this.getPosY(player.getX(), player.getY()) * this.unit_pixels;
+                    int x = this.getPosX(player.getX(), player.getY());
+                    int y = this.getPosY(player.getX(), player.getY());
                     if (player.getMovePogression() != 1) {
-                        int old_x = this.getPosX(player.getOldX(), player.getOldY()) * this.unit_pixels;
-                        int old_y = this.getPosY(player.getOldX(), player.getOldY()) * this.unit_pixels;
+                        int old_x = this.getPosX(player.getOldX(), player.getOldY());
+                        int old_y = this.getPosY(player.getOldX(), player.getOldY());
                         x = (old_x + (int) ((x - old_x) * player.getMovePogression()));
                         y = (old_y + (int) ((y - old_y) * player.getMovePogression()));
                     }
@@ -119,11 +125,11 @@ public class Board extends JPanel {
     }
 
     private int getPosX(int i, int j) {
-        return 3 * i + j;
+        return (3 * i + j) * this.unit_pixels;
     }
 
     private int getPosY(int i, int j) {
-        return 2 * j - i + this.cols;
+        return (2 * j - i + this.cols) * this.unit_pixels;
     }
 
     public boolean isSquareWalkable(int i, int j) {
