@@ -18,10 +18,7 @@ public class Game extends Thread implements KeyListener {
     private int player_id;
     private boolean started = false;
     private int fps = 25;
-    private boolean key_up = false;
-    private boolean key_down = false;
-    private boolean key_left = false;
-    private boolean key_right = false;
+    private int last_pressed_key = 0;
 
     private Game() {
         this.start();
@@ -57,24 +54,7 @@ public class Game extends Thread implements KeyListener {
                     continue;
                 }
 
-                {
-                    Player player = this.getCurrentPlayer();
-                    if (player.getMovePogression() == 1) {
-                        int up_target = player.getIndex() - this.board.getCols();
-                        int down_target = player.getIndex() + this.board.getCols();
-                        int left_target = player.getIndex() + 1;
-                        int right_target = player.getIndex() - 1;
-                        if (this.key_up && this.board.isSquareWalkable(up_target)) {
-                            player.startMove(up_target, true);
-                        } else if (this.key_down && this.board.isSquareWalkable(down_target)) {
-                            player.startMove(down_target, true);
-                        } else if (this.key_left && this.board.isSquareWalkable(left_target)) {
-                            player.startMove(left_target, true);
-                        } else if (this.key_right && this.board.isSquareWalkable(right_target)) {
-                            player.startMove(right_target, true);
-                        }
-                    }
-                }
+                this.move();
 
                 for (Player player : this.players.values()) {
                     player.progressMove(period);
@@ -137,6 +117,25 @@ public class Game extends Thread implements KeyListener {
         }
     }
 
+    private void move() {
+        Player player = this.getCurrentPlayer();
+        if (player.getMovePogression() == 1) {
+            int up_target = player.getIndex() - this.board.getCols();
+            int down_target = player.getIndex() + this.board.getCols();
+            int left_target = player.getIndex() + 1;
+            int right_target = player.getIndex() - 1;
+            if (this.last_pressed_key == KeyEvent.VK_UP && this.board.isSquareWalkable(up_target)) {
+                player.startMove(up_target, true);
+            } else if (this.last_pressed_key == KeyEvent.VK_DOWN && this.board.isSquareWalkable(down_target)) {
+                player.startMove(down_target, true);
+            } else if (this.last_pressed_key == KeyEvent.VK_LEFT && this.board.isSquareWalkable(left_target)) {
+                player.startMove(left_target, true);
+            } else if (this.last_pressed_key == KeyEvent.VK_RIGHT && this.board.isSquareWalkable(right_target)) {
+                player.startMove(right_target, true);
+            }
+        }
+    }
+
     public void keyTyped(KeyEvent e) {
         if (e.getKeyChar() == KeyEvent.VK_SPACE) {
             Client.getInstance().dropBomb();
@@ -144,32 +143,16 @@ public class Game extends Thread implements KeyListener {
     }
 
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_UP) {
-            this.key_up = true;
+        int key_code = e.getKeyCode();
+        if (key_code == KeyEvent.VK_UP || key_code == KeyEvent.VK_DOWN || key_code == KeyEvent.VK_LEFT || key_code == KeyEvent.VK_RIGHT) {
+            this.last_pressed_key = key_code;
         }
-        if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-            this.key_down = true;
-        }
-        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-            this.key_left = true;
-        }
-        if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-            this.key_right = true;
-        }
+        this.move();
     }
 
     public void keyReleased(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_UP) {
-            this.key_up = false;
-        }
-        if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-            this.key_down = false;
-        }
-        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-            this.key_left = false;
-        }
-        if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-            this.key_right = false;
+        if (this.last_pressed_key == e.getKeyCode()) {
+            this.last_pressed_key = 0;
         }
     }
 }
