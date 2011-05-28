@@ -21,7 +21,7 @@ public class Board extends JPanel {
     private int cols;
     private int rows;
     private int unit_pixels = 10;
-    private int fire_duration = 3000;
+    private int fire_duration = 1500;
 
     public Board() {
         super();

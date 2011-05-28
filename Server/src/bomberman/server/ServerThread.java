@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.json.simple.JSONValue;
@@ -32,7 +33,7 @@ public class ServerThread extends Thread {
     /**
      * Squares per second
      */
-    private double velocity = 3;
+    private double velocity = 4;
 
     public ServerThread(Socket socket, int client_id) {
         this.client_id = client_id;
@@ -169,20 +170,20 @@ public class ServerThread extends Thread {
     }
 
     private void sendPlayersList() {
-        Map<Integer, Map> players_list = Server.getPlayersList(this.client_id);
-        this.send("players", players_list);
+        this.send("players", Server.getPlayersList(this.client_id));
     }
 
     private void addPlayer() {
-        ArrayList<Integer> position = new ArrayList<Integer>();
-        position.add(this.client_id);
-        position.add(this.position_x);
-        position.add(this.position_y);
+        Server.sendAllBut("add_player", this.exportPlayerData(), this.client_id);
+    }
 
-        ArrayList<Integer> exceptions = new ArrayList<Integer>();
-        exceptions.add(this.client_id);
-
-        Server.sendAllBut("add_player", position, exceptions);
+    public Map<String, Object> exportPlayerData() {
+        Map<String, Object> player_data = new HashMap<String, Object>();
+        player_data.put("id", this.client_id);
+        player_data.put("x", this.position_x);
+        player_data.put("y", this.position_y);
+        player_data.put("velocity", this.velocity);
+        return player_data;
     }
 
     public boolean isInitialized() {
@@ -215,11 +216,7 @@ public class ServerThread extends Thread {
             move.add(this.client_id);
             move.add(this.position_x + diff_x);
             move.add(this.position_y + diff_y);
-
-            ArrayList<Integer> exceptions = new ArrayList<Integer>();
-            exceptions.add(this.client_id);
-
-            Server.sendAllBut("move", move, exceptions);
+            Server.sendAllBut("move", move, this.client_id);
 
             new Thread(new Runnable() {
 

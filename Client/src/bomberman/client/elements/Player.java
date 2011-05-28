@@ -1,12 +1,15 @@
 package bomberman.client.elements;
 
+import bomberman.client.controller.Game;
 import bomberman.client.gui.Window;
 import bomberman.client.model.Client;
 import java.awt.Image;
+import java.util.Map;
 
 public class Player {
 
     protected Image image;
+    private int id;
     /**
      * Target position of the player
      */
@@ -24,44 +27,41 @@ public class Player {
     /**
      * Squares per second
      */
-    private double velocity = 3;
+    private double velocity = 4;
 
-    private int nb_bombs = 0;
-    private int bombs_allowed = 1;
-    private int bomb_sleeping_time = 4000;
-
-    public Player(int x, int y) {
-        this.x = x;
-        this.y = y;
+    public Player() {
         this.image = Window.getInstance().getToolkit().getImage("images/player.png");
     }
 
-    public void setNbBombs(int nb_bombs) {
-        this.nb_bombs = nb_bombs;
-    }
-
-    public void setBombsAllowed(int nb_bombs) {
-        this.bombs_allowed = nb_bombs;
-    }
-
-    public void setBombSleepingTime(int sleeping_time) {
-        this.bomb_sleeping_time = sleeping_time;
-    }
-
-    public int getNbBombs() {
-        return this.nb_bombs;
-   }
-
-    public int getBombsAllowed() {
-        return this.bombs_allowed;
-    }
-
-    public int getBombSleepingTime() {
-        return this.bomb_sleeping_time;
+    public static Player factory(Map<String, Object> data) throws Exception{
+        int id = Client.getInstance().convertToInt(data.get("id"));
+        Player player = new Player();
+        player.setId(id);
+        player.setX(Client.getInstance().convertToInt(data.get("x")));
+        player.setY(Client.getInstance().convertToInt(data.get("y")));
+        player.setVelocity(Client.getInstance().convertToDouble(data.get("velocity")));
+        if (data.containsKey("client") && (Boolean) data.get("client")) {
+            Game.getInstance().setCurrentPlayerId(id);
+        }
+        return player;
     }
 
     public Image getImage() {
         return this.image;
+    }
+
+    /**
+     * @return the client_id
+     */
+    public int getId() {
+        return id;
+    }
+
+    /**
+     * @param client_id the client_id to set
+     */
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void progressMove(int period) {

@@ -38,9 +38,9 @@ public class Server {
         }
     }
 
-    public static void sendAllBut(String command, Object obj, ArrayList<Integer> exceptions) {
+    public static void sendAllBut(String command, Object obj, int exception_client_id) {
         for (ServerThread player_thread : players_threads.values()) {
-            if (!exceptions.contains(player_thread.getClientId())) {
+            if (player_thread.getClientId() != exception_client_id) {
                 player_thread.send(command, obj);
             }
         }
@@ -50,20 +50,20 @@ public class Server {
         return players_threads;
     }
 
-    public static Map<Integer, Map> getPlayersList(int client_id) {
-        Map<Integer, Map> players = new HashMap<Integer, Map>();
+    public static List<Map> getPlayersList(int client_id) {
+        List<Map> players = new ArrayList<Map>();
 
         for (ServerThread player_thread : players_threads.values()) {
-            Boolean client = client_id == player_thread.getClientId();
+            boolean client = client_id == player_thread.getClientId();
             if (!player_thread.isInitialized() && !client) {
                 continue;
             }
-            Map player_infos = new HashMap();
-            player_infos.put("x", player_thread.getPostionX());
-            player_infos.put("y", player_thread.getPositionY());
-            player_infos.put("client", client);
+            Map<String, Object> player_data = player_thread.exportPlayerData();
+            if (client) {
+                player_data.put("client", client);
+            }
 
-            players.put(player_thread.getClientId(), player_infos);
+            players.add(player_data);
         }
         return players;
     }

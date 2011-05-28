@@ -81,13 +81,10 @@ public class Client extends Thread {
                 Game.getInstance().getBoard().setData((List<Map>) obj);
 
             } else if (command.equals("players")) {
-                Game.getInstance().setPlayers((Map<String, Map>) obj);
+                Game.getInstance().setPlayers((List<Map>) obj);
 
             } else if (command.equals("add_player")) {
-                int player_id = this.convertToInt(((List) obj).get(0));
-                int x = this.convertToInt(((List) obj).get(1));
-                int y = this.convertToInt(((List) obj).get(2));
-                Game.getInstance().addPlayer(player_id, x, y);
+                Game.getInstance().addPlayer((Map<String, Object>) obj);
 
             } else if (command.equals("del_player")) {
                 Game.getInstance().delPlayer(this.convertToInt(obj));
@@ -158,6 +155,17 @@ public class Client extends Thread {
             return ((Long) n).intValue();
         }
         throw new Exception(n + " not an Integer");
+    }
+
+    public double convertToDouble(Object n) throws Exception {
+        if (n instanceof Double) {
+            return (Double) n;
+        } else if (n instanceof Long) {
+            return ((Long) n).doubleValue();
+        } else if (n instanceof Integer) {
+            return ((Integer) n).doubleValue();
+        }
+        throw new Exception(n + " not an Double");
     }
 
     public void movePlayer(int diff_x, int diff_y) {
