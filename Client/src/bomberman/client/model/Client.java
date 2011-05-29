@@ -1,6 +1,7 @@
 package bomberman.client.model;
 
 import bomberman.client.controller.Game;
+import bomberman.client.elements.Bonus;
 import bomberman.client.elements.Element;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -111,6 +112,10 @@ public class Client extends Thread {
 
             } else if (command.equals("del_element")) {
                 Game.getInstance().getBoard().delElement(convertToInt(obj));
+            } else if (command.equals("add_bonus")) {
+                int index = convertToInt(((List) obj).get(0));
+                int type = convertToInt(((List) obj).get(1));
+                Game.getInstance().getBoard().setBonus(index, type);
             }
 
         } catch (Exception e) {

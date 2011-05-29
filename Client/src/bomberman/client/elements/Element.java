@@ -54,6 +54,10 @@ public abstract class Element {
         this.index = index;
     }
 
+    public void setImage(Image image) {
+        this.image = image;
+    }
+
     public Image getImage() {
         return this.image;
     }

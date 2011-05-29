@@ -1,7 +1,9 @@
 package bomberman.server;
 
 import bomberman.server.elements.Bomb;
+import bomberman.server.elements.Bonus;
 import bomberman.server.elements.Element;
+import bomberman.server.elements.Wall;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -22,7 +24,7 @@ public class ServerThread extends Thread {
     private int client_id;
     private boolean initialized = false;
     private int nb_bombs = 0;
-    private int bombs_allowed = 1;
+    private int bombs_allowed = 10;
     private int bomb_sleeping_time = 2000;
     private boolean moving = false;
     /**
@@ -189,7 +191,7 @@ public class ServerThread extends Thread {
         } else if (Math.abs(board_index - target_index) != 1 && Math.abs(board_index - target_index) != Server.board.getCols()) {
             moving_allowed = false;
 
-        } else if(!Server.board.isSquareWalkable(target_index)) {
+        } else if (!Server.board.isSquareWalkable(target_index)) {
             moving_allowed = false;
         }
 
@@ -207,10 +209,17 @@ public class ServerThread extends Thread {
                     int move_duration = (int) (1000 / velocity);
                     try {
                         Thread.sleep(move_duration / 2);
-                        
+
                         board_index = target_index;
                         if (Server.board.isSquareOnFire(board_index)) {
                             Server.killPlayer(client_id);
+                        } else if (Server.board.getElement(board_index) instanceof Bonus) {
+                            Wall wall = new Wall();
+                            wall.setIndex(board_index);
+                            wall.setBonusProbability(0);
+                            Server.board.setElement(wall);
+                            Server.sendAll("add_element", Element.export(wall));
+                            wall.burn();
                         }
 
                         Thread.sleep(move_duration / 2);

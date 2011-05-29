@@ -1,6 +1,7 @@
 package bomberman.client.gui;
 
 import bomberman.client.controller.Game;
+import bomberman.client.elements.Bonus;
 import bomberman.client.elements.Element;
 import bomberman.client.elements.Player;
 import java.awt.Dimension;
@@ -8,6 +9,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JPanel;
@@ -21,7 +23,7 @@ public class Board extends JPanel {
     private int cols;
     private int rows;
     private int unit_pixels = 10;
-    private int fire_duration = 1500;
+    private int fire_duration = 1000;
 
     public Board() {
         super();
@@ -107,6 +109,16 @@ public class Board extends JPanel {
 
     public void delElement(int index) {
         this.elements.set(index, null);
+    }
+
+    public void setBonus(int index, int type) {
+        Bonus bonus = new Bonus();
+        bonus.setIndex(index);
+        bonus.setType(type);
+        bonus.setWalkable(true);
+        System.out.println("bonus index : " + bonus.getIndex());
+        System.out.println("bonus type : " + bonus.getType());
+        this.setElement(bonus);
     }
 
     public void setCols(int cols) {

@@ -12,7 +12,7 @@ public class Board {
     private List<Integer> fire = new ArrayList();
     private int cols = 15;
     private int rows = 15;
-    private int fire_duration = 1500;
+    private int fire_duration = 1000;
     private double probability_breakable_wall = 0.3;
     private double probability_unbreakable_wall = 0.07;
 
