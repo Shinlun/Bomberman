@@ -155,11 +155,8 @@ public class Board extends JPanel {
                 } catch (InterruptedException e) {
                     System.out.println(e.getMessage());
                 }
-                for (int i : add_fire) {
-                    int pos = fire.indexOf(i);
-                    if (pos != -1) {
-                        fire.remove(pos);
-                    }
+                for (Integer i : add_fire) {
+                    fire.remove(i);
                 }
             }
         }).start();
