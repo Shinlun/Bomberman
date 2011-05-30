@@ -3,7 +3,6 @@ package bomberman.server;
 import bomberman.server.elements.Bomb;
 import bomberman.server.elements.Bonus;
 import bomberman.server.elements.Element;
-import bomberman.server.elements.Wall;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -24,7 +23,7 @@ public class ServerThread extends Thread {
     private int client_id;
     private boolean initialized = false;
     private int nb_bombs = 0;
-    private int bombs_allowed = 10;
+    private int bombs_allowed = 1;
     private int bomb_sleeping_time = 2000;
     private boolean moving = false;
     /**
@@ -50,6 +49,14 @@ public class ServerThread extends Thread {
 
     public int getClientId() {
         return this.client_id;
+    }
+
+    public int getBombsAllowed() {
+        return this.bombs_allowed;
+    }
+
+    public void setBombsAllowed(int bombs_allowed) {
+        this.bombs_allowed = bombs_allowed;
     }
 
     @Override
@@ -214,6 +221,7 @@ public class ServerThread extends Thread {
                         if (Server.board.isSquareOnFire(board_index)) {
                             Server.killPlayer(client_id);
                         } else if (Server.board.getElement(board_index) instanceof Bonus) {
+                            ((Bonus) Server.board.getElement(board_index)).applyBonus(client_id);
                             Server.board.delElement(board_index);
                             Server.sendAll("del_element", board_index);
                         }

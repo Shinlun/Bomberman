@@ -76,6 +76,10 @@ public class Server {
         return positions;
     }
 
+    public static ServerThread getThread(int client_id) {
+        return players_threads.get(client_id);
+    }
+
     public static void delPlayer(int client_id) {
         players_threads.remove(client_id);
         sendAll("del_player", client_id);

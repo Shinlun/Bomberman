@@ -1,6 +1,7 @@
 package bomberman.server.elements;
 
 import bomberman.server.Server;
+import bomberman.server.ServerThread;
 
 public class Bonus extends Element {
 
@@ -19,12 +20,23 @@ public class Bonus extends Element {
         return this.type;
     }
 
+    public void applyBonus(int client_id) {
+        ServerThread thread = Server.getThread(client_id);
+        switch (this.type) {
+            case 1:
+                thread.setBombsAllowed(thread.getBombsAllowed() + 1);
+                break;
+            default:
+                break;
+        }
+    }
+
     @Override
     public void burn() {
         try {
             Server.board.delElement(this.index);
             Server.sendAll("del_element", this.index);
-        } catch(Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
