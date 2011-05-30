@@ -4,13 +4,12 @@ import bomberman.server.Server;
 
 public class Wall extends Element {
 
-    private double bonus_probability = 1;
+    private double bonus_probability = 0.2;
 
     @Override
     public void burn() {
         if (this.active) {
             this.setActive(false);
-            //this.bonus_probability = Math.random() / 2;
             this.delayRebirth();
             Server.sendAll("del_element", this.index);
 
