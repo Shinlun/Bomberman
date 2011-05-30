@@ -23,7 +23,7 @@ public abstract class Element {
             element = new Bomb();
         } else if (data.get("type").equals("bonus")) {
             element = new Bonus();
-            ((Bonus) element).setType(((Long) data.get("bonus_type")).intValue());
+            ((Bonus) element).setType(Client.convertToInt(data.get("bonus_type")));
         }
 
         if (element == null) {

@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class Server {
 
-    final static int port = 443;
+    final static int port = 1337;
     private static int nb_players = 1;
     private static HashMap<Integer, ServerThread> players_threads = new HashMap<Integer, ServerThread>();
     public static Board board;

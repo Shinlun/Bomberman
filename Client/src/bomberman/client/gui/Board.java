@@ -1,7 +1,6 @@
 package bomberman.client.gui;
 
 import bomberman.client.controller.Game;
-import bomberman.client.elements.Bonus;
 import bomberman.client.elements.Element;
 import bomberman.client.elements.Player;
 import java.awt.Dimension;
@@ -9,7 +8,6 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JPanel;
