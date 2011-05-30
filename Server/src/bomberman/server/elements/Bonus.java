@@ -24,12 +24,6 @@ public class Bonus extends Element {
         try {
             Server.board.delElement(this.index);
             Server.sendAll("del_element", this.index);
-            Wall wall = new Wall();
-            wall.setIndex(this.index);
-            wall.setBonusProbability(0);
-            Server.board.setElement(wall);
-            Server.sendAll("add_element", Element.export(wall));
-            wall.burn();
         } catch(Exception e){
             System.out.println(e.getMessage());
         }

@@ -111,16 +111,6 @@ public class Board extends JPanel {
         this.elements.set(index, null);
     }
 
-    public void setBonus(int index, int type) {
-        Bonus bonus = new Bonus();
-        bonus.setIndex(index);
-        bonus.setType(type);
-        bonus.setWalkable(true);
-        System.out.println("bonus index : " + bonus.getIndex());
-        System.out.println("bonus type : " + bonus.getType());
-        this.setElement(bonus);
-    }
-
     public void setCols(int cols) {
         this.cols = cols;
     }

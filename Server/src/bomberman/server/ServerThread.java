@@ -214,12 +214,8 @@ public class ServerThread extends Thread {
                         if (Server.board.isSquareOnFire(board_index)) {
                             Server.killPlayer(client_id);
                         } else if (Server.board.getElement(board_index) instanceof Bonus) {
-                            Wall wall = new Wall();
-                            wall.setIndex(board_index);
-                            wall.setBonusProbability(0);
-                            Server.board.setElement(wall);
-                            Server.sendAll("add_element", Element.export(wall));
-                            wall.burn();
+                            Server.board.delElement(board_index);
+                            Server.sendAll("del_element", board_index);
                         }
 
                         Thread.sleep(move_duration / 2);

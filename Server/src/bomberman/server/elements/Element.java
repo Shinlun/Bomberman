@@ -23,6 +23,9 @@ public abstract class Element {
             data.put("type", "wall");
         } else if (element instanceof Bomb) {
             data.put("type", "bomb");
+        } else if(element instanceof Bonus) {
+            data.put("type", "bonus");
+            data.put("bonus_type", ((Bonus) element).getType());
         }
 
         if (data.isEmpty()) {
