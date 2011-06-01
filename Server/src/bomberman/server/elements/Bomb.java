@@ -63,22 +63,22 @@ public class Bomb extends Element {
         }
 
         for (int i = this.index + 1; i % Server.board.getCols() != 0; i++) {
-            if (!this.checkSquare(i)) {
+            if ((int) Math.abs(i - this.index) > Server.getThread(client_id).getBurningLength() || !this.checkSquare(i)) {
                 break;
             }
         }
         for (int i = this.index - 1; (i + 1) % Server.board.getCols() != 0; i--) {
-            if (!this.checkSquare(i)) {
+            if ((int) Math.abs(i - this.index) > Server.getThread(client_id).getBurningLength() || !this.checkSquare(i)) {
                 break;
             }
         }
         for (int i = this.index + Server.board.getCols(); i < Server.board.getSize(); i += Server.board.getCols()) {
-            if (!this.checkSquare(i)) {
+            if ((((int) Math.abs(i - this.index)) + 1) / Server.board.getCols() > Server.getThread(client_id).getBurningLength() || !this.checkSquare(i)) {
                 break;
             }
         }
         for (int i = this.index - Server.board.getCols(); i >= 0; i -= Server.board.getCols()) {
-            if (!this.checkSquare(i)) {
+            if ((((int) Math.abs(i - this.index)) + 1) / Server.board.getCols() > Server.getThread(client_id).getBurningLength() || !this.checkSquare(i)) {
                 break;
             }
         }

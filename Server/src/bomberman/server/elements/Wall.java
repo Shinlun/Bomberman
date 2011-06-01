@@ -4,7 +4,7 @@ import bomberman.server.Server;
 
 public class Wall extends Element {
 
-    private double bonus_probability = 0.2;
+    private double bonus_probability = 0.3;
 
     @Override
     public void burn() {

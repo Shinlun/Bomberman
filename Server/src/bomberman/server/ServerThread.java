@@ -25,6 +25,7 @@ public class ServerThread extends Thread {
     private int nb_bombs = 0;
     private int bombs_allowed = 1;
     private int bomb_sleeping_time = 2000;
+    private int burning_length = 1;
     private boolean moving = false;
     /**
      * Position of the player
@@ -57,6 +58,20 @@ public class ServerThread extends Thread {
 
     public void setBombsAllowed(int bombs_allowed) {
         this.bombs_allowed = bombs_allowed;
+    }
+
+    public int getBurningLength() {
+        return this.burning_length;
+    }
+
+    public void setBurningLength(int length) {
+        this.burning_length = length;
+    }
+
+    public void increaseBurningLength() {
+        if (this.burning_length < Server.board.getCols()) {
+            this.burning_length++;
+        }
     }
 
     @Override

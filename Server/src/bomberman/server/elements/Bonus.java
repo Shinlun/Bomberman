@@ -26,6 +26,9 @@ public class Bonus extends Element {
             case 1:
                 thread.setBombsAllowed(thread.getBombsAllowed() + 1);
                 break;
+            case 2:
+                thread.increaseBurningLength();
+                break;
             default:
                 break;
         }
