@@ -89,7 +89,7 @@ public class Server {
         ArrayList<Integer> position = new ArrayList<Integer>();
         players_threads.get(client_id).setRandomPosition();
         players_threads.get(client_id).setBombsAllowed(1);
-        players_threads.get(client_id).setBurningLength(1);
+        players_threads.get(client_id).resetBurningLength();
         position.add(client_id);
         position.add(players_threads.get(client_id).getBoardIndex());
         sendAll("reposition", position);

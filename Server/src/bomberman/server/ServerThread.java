@@ -64,8 +64,8 @@ public class ServerThread extends Thread {
         return this.burning_length;
     }
 
-    public void setBurningLength(int length) {
-        this.burning_length = length;
+    public void resetBurningLength() {
+        this.burning_length = 1;
     }
 
     public void increaseBurningLength() {
