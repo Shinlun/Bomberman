@@ -22,16 +22,26 @@ public class Bonus extends Element {
 
     public void applyBonus(int client_id) {
         ServerThread thread = Server.getThread(client_id);
-        switch (this.type) {
+        if(this.type == 1) {
+            thread.setBombsAllowed(thread.getBombsAllowed() + 1);
+        } else if(this.type == 2) {
+            thread.increaseBurningLength();
+        } else if(this.type == 3) {
+            Server.killPlayer(client_id);
+        }
+        /*switch (this.type) {
             case 1:
                 thread.setBombsAllowed(thread.getBombsAllowed() + 1);
                 break;
             case 2:
                 thread.increaseBurningLength();
                 break;
+            case 3:
+                Server.killPlayer(client_id);
+                break;
             default:
                 break;
-        }
+        }*/
     }
 
     @Override

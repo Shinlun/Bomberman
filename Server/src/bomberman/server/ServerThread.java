@@ -236,9 +236,10 @@ public class ServerThread extends Thread {
                         if (Server.board.isSquareOnFire(board_index)) {
                             Server.killPlayer(client_id);
                         } else if (Server.board.getElement(board_index) instanceof Bonus) {
+                            int bonus_index = board_index;
                             ((Bonus) Server.board.getElement(board_index)).applyBonus(client_id);
-                            Server.board.delElement(board_index);
-                            Server.sendAll("del_element", board_index);
+                            Server.sendAll("del_element", bonus_index);
+                            Server.board.delElement(bonus_index);
                         }
 
                         Thread.sleep(move_duration / 2);
